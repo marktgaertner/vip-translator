@@ -775,6 +775,12 @@ h1 { font-size: 22px; line-height: 1.2; margin: 0 0 4px; color: var(--ink-strong
 .leaflet-bar, .leaflet-bar a { border-radius: 0 !important; }
 .leaflet-bar { border: 1px solid var(--line-strong) !important; box-shadow: none !important; }
 .leaflet-control-attribution { font-size: 11px; }
+#karte-fehler { position: absolute; inset: 0; z-index: 450; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(231,236,234,.92); }
+#karte-fehler .kf-box { background: var(--surface); border: 1px solid var(--line-strong); padding: 18px; max-width: 440px; font-size: 15px; }
+#karte-fehler .kf-box b { font-size: 16px; color: var(--ink-strong); }
+#karte-fehler .kf-box p { margin: 8px 0; color: var(--muted); }
+#karte-fehler .kf-box .btn { display: inline-block; text-decoration: none; }
+#karte-fehler .kf-small { font-size: 13px; }
 .mk { background: none; border: 0; }
 .mk .sym { box-shadow: 0 0 0 2px #fff; }
 .mk.sel .sym { outline: 3px solid var(--orange); outline-offset: 2px; }
@@ -1435,14 +1441,35 @@ document.addEventListener('DOMContentLoaded', function () {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* egal */ }
   }
 
+  // Hinweis, wenn die Kartenkacheln nicht geladen werden können.
+  function hinweisZeigen() {
+    if (document.getElementById('karte-fehler')) return;
+    var c = map.getCenter(), z = map.getZoom();
+    var el = document.createElement('div');
+    el.id = 'karte-fehler';
+    el.setAttribute('role', 'alert');
+    el.innerHTML = '<div class="kf-box"><b>Die Kartenansicht kann hier nicht geladen werden.</b>' +
+      '<p>Die Kartenkacheln von OpenStreetMap sind in diesem Netz oder in dieser Ansicht gesperrt (z. B. Firmen-Firewall, Werbeblocker oder eine eingebettete Vorschau). Die Liste links funktioniert trotzdem.</p>' +
+      '<p><a class="btn primary" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=' + c.lat.toFixed(5) + '&amp;mlon=' + c.lng.toFixed(5) + '&amp;zoom=' + z + '">Karte in neuem Fenster öffnen</a></p>' +
+      '<p class="kf-small">Tipp: Die Seite direkt im Browser aufrufen statt aus der App oder einer Vorschau, und Werbeblocker für diese Seite abschalten.</p></div>';
+    document.getElementById('map').parentNode.appendChild(el);
+  }
+  function hinweisWeg() { var el = document.getElementById('karte-fehler'); if (el) el.remove(); }
+
   // ---------- Karte (erst nach Zustimmung) ----------
   function initMap() {
     if (map) return;
     $('consent').classList.add('hidden');
     map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([52.395, 13.07], 12);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var kacheln = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende'
-    }).addTo(map);
+    });
+    // Kacheln kommen nicht durch (Firmennetz, Werbeblocker, eingebettete Vorschau):
+    // dann klar sagen, was los ist, statt eine leere Fläche zu zeigen. Die Liste bleibt nutzbar.
+    var fehler = 0, geladen = 0;
+    kacheln.on('tileload', function () { geladen++; hinweisWeg(); });
+    kacheln.on('tileerror', function () { fehler++; if (!geladen && fehler >= 3) hinweisZeigen(); });
+    kacheln.addTo(map);
     var bounds = [];
     D.standorte.forEach(function (s) {
       var size = s.kategorie === 'kundenzentrum' ? 32 : s.kategorie === 'serviceagentur' ? 28 : 24;

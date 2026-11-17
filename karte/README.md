@@ -33,6 +33,9 @@ selbst eine Einwilligung einholt.
 Für viel Verkehr (z. B. Startseite der Website) sind die öffentlichen
 OSM-Kacheln nach deren Nutzungsrichtlinie nicht gedacht; dann einen eigenen
 oder kommerziellen Kachel-Server eintragen (eine Zeile, `L.tileLayer(...)`).
+Sind die Kacheln gesperrt (Firmen-Firewall, Werbeblocker, eingebettete
+Vorschau), zeigt die Karte einen Hinweis mit Link auf openstreetmap.org; die
+Liste funktioniert trotzdem.
 Lokal per Doppelklick geöffnet zeigt die Karte keine Kacheln (OSM verlangt
 eine Webadresse als Herkunft) – auf dem Webspace funktioniert es.
 
