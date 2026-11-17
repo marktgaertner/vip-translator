@@ -1,6 +1,6 @@
 name: Web-Tools prüfen
 
-# Tarifberater, Jobticket-Rechner und Preispflege sind einzelne HTML-Dateien;
+# Tarifberater, Jobticket-Rechner, Preispflege und Karte sind einzelne HTML-Dateien;
 # ihre Rechenlogik wird mit Node ohne Browser geprüft.
 on:
   push:
@@ -25,3 +25,5 @@ jobs:
         run: node jobticket/test/rechner-test.mjs
       - name: Preispflege
         run: node preispflege/test/pflege-test.mjs
+      - name: Karte
+        run: node karte/test/karte-test.mjs
