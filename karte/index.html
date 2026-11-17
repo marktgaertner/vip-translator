@@ -1461,9 +1461,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (map) return;
     $('consent').classList.add('hidden');
     map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([52.395, 13.07], 12);
+    // OSM verlangt, dass die Herkunft der Seite mitgeschickt wird (Referer). Sonst
+    // antworten die Server mit 403 "tile usage policy" - als Bild, nicht als Fehler.
     var kacheln = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende'
+      maxZoom: 19, referrerPolicy: 'strict-origin-when-cross-origin',
+      attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende'
     });
+    // Probe: eine Kachel direkt abrufen. Kommt dabei kein Erfolg, gleich den Hinweis zeigen
+    // statt Sperr-Bilder in die Karte zu legen.
+    fetch('https://tile.openstreetmap.org/12/2200/1343.png', { mode: 'cors', referrerPolicy: 'strict-origin-when-cross-origin', cache: 'no-store' })
+      .then(function (r) { if (!r.ok) hinweisZeigen(); }, function () { /* Netzwerk/CORS: die Kacheln selbst entscheiden */ });
     // Kacheln kommen nicht durch (Firmennetz, Werbeblocker, eingebettete Vorschau):
     // dann klar sagen, was los ist, statt eine leere Fläche zu zeigen. Die Liste bleibt nutzbar.
     var fehler = 0, geladen = 0;
