@@ -49,8 +49,11 @@ im Rechner).
 
 ## Pflege und Test
 
-Zahlen stehen im Block `<script id="jobticket-data">` (Preise als Paar
-`[2026, 2027]`). Nach jeder Änderung:
+Preise und Prozentsätze ändert das Team mit `preispflege/index.html` (Datei
+hineinziehen, Werte ändern, neue Datei herunterladen) – ohne Code. Alle Texte
+mit Prozentsätzen („Mindestens 25 % …“, „Mit 25 % Pauschalsteuer“) folgen den
+Daten. Technisch stehen die Werte im Block `<script id="jobticket-data">`.
+Prüfung der Rechenlogik:
 
 ```
 node jobticket/test/rechner-test.mjs

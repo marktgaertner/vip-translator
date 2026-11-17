@@ -1,0 +1,27 @@
+name: Web-Tools prüfen
+
+# Tarifberater, Jobticket-Rechner und Preispflege sind einzelne HTML-Dateien;
+# ihre Rechenlogik wird mit Node ohne Browser geprüft.
+on:
+  push:
+    paths: ['tarifberater/**', 'jobticket/**', 'preispflege/**', 'karte/**', '.github/workflows/web-tools.yml']
+  pull_request:
+    paths: ['tarifberater/**', 'jobticket/**', 'preispflege/**', 'karte/**', '.github/workflows/web-tools.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tarifberater
+        run: node tarifberater/test/engine-test.mjs
+      - name: Jobticket-Rechner
+        run: node jobticket/test/rechner-test.mjs
+      - name: Preispflege
+        run: node preispflege/test/pflege-test.mjs

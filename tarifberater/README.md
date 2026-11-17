@@ -111,25 +111,27 @@ korrigieren kann. Grundlinien:
 
 ## Tarifdaten pflegen
 
-Alle Preise stehen in **einem** JSON-Block am Ende von `index.html`
-(`<script id="tarif-data">`), jeder Preis als Paar `[2026, 2027]`. Die Seite
-wählt das Jahr automatisch nach dem Datum und zeigt den Folgepreis in
-Klammern („ab 1.1.2027: …“), solange er abweicht. Der Jahreswechsel braucht
-also **keinen Eingriff**.
+**Ohne Programmierkenntnisse:** `preispflege/index.html` im Browser öffnen,
+diese Datei (`tarifberater/index.html`) hineinziehen, Preise eintragen,
+herunterladen und auf dem Webspace ersetzen. Der Editor prüft jede Eingabe,
+rechnet alle 2.160 Antwortkombinationen mit den neuen Preisen durch und
+sperrt den Download bei Fehlern. Anleitung: `preispflege/README.md`.
 
-Wenn der VBB die Preise für 2028 veröffentlicht (üblicherweise im September):
+Technisch stehen alle Preise in **einem** JSON-Block (`<script id="tarif-data">`),
+jeder Preis als Paar `[laufendes Jahr, Folgejahr]`. Die Seite wählt das Jahr
+nach dem Datum und zeigt den Folgepreis („ab 1.1.2027: …“), solange er
+abweicht – am 1. Januar schaltet sie ohne Eingriff um. Jahresangaben in den
+Texten („gültig seit 1. Januar …“) entstehen aus den Daten in allen 16
+Sprachen; ein optionaler Zusatz je Jahr (`hinweis`, z. B. „vorbehaltlich
+Tarifgenehmigung“) erscheint nur auf Deutsch.
 
-1. In `jahre` den Eintrag 2026 entfernen und 2028 anhängen.
-2. In jedem Preispaar den ersten Wert streichen und den 2028-Wert anhängen –
-   aus `[63.00, 66.80]` wird `[66.80, 70.00]`.
-3. `stand` auf das Pflegedatum setzen.
-4. `node tarifberater/test/engine-test.mjs` laufen lassen – der Test prüft
-   unter anderem, dass kein Preis um mehr als 10 % springt (Tippfehler-Schutz)
-   und dass alle Kombinationen ein Ergebnis liefern.
-5. Mit `?jahr=2028` die Vorschau ansehen.
+Wenn der VBB die Preise für das übernächste Jahr veröffentlicht (meist im
+September): im Editor „Jahreswechsel vorbereiten“ und die neuen Preise in die
+rechte Spalte eintragen. Mit `?jahr=2028` lässt sich vorab ansehen, wie die
+Seite dann aussieht.
 
-Texte, die Zahlen enthalten (etwa „ab 19 Fahrten lohnt sich ein Abo“),
-werden aus den Daten berechnet – sie müssen nicht von Hand angepasst werden.
+Texte mit Zahlen (etwa „ab 19 Fahrten lohnt sich ein Abo“) werden aus den
+Daten berechnet und müssen nicht angepasst werden.
 
 ## Quellen und Prüfstand (26.10.2026)
 

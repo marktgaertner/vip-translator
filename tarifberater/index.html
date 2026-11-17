@@ -9,229 +9,169 @@
 <style>
 /* ============================================================
    ViP Tarifberater - eine Datei, keine Abhängigkeiten.
-   Farben: offizielle ViP-Palette (Waldgrün #006A4D, Dunkelgrün
-   #09503D, Seegrün #008963, Aquamarin #DEF3F0) plus die vier
-   Windrad-Farben als Statusakzente - wie in der Übersetzer-App.
+   Gestaltung "sachlich": eckig wie Haltestellenbeschilderung,
+   flache Flächen, feste Linien, keine Schatten, keine Pillen,
+   Systemschrift. Farben: ViP-Waldgrün #006A4D, Dunkelgrün #09503D,
+   Seegrün #008963; Windrad-Orange/Blau nur für Hinweise.
    ============================================================ */
 :root {
-  --paper: #DEF3F0;
+  --page: #F2F5F4;
   --surface: #FFFFFF;
-  --surface-soft: #EEF8F5;
-  --mint: #CDEAE0;
-  --ink: #09503D;
-  --ink-strong: #0D1A15;
-  --muted: #4C6A5F;
-  --outline: #B9DDD3;
+  --tint: #E5F1ED;
+  --line: #CBD8D3;
+  --line-strong: #8FA79E;
+  --ink: #16241F;
+  --ink-strong: #0B1612;
+  --muted: #55665F;
   --accent: #006A4D;
-  --accent-2: #008963;
+  --accent-dark: #09503D;
   --on-accent: #FFFFFF;
-  --rot: #D5232A;
   --orange: #F39200;
   --blau: #1467A8;
-  --gruen: #41A62A;
-  --warn-bg: #FFF1DB;
-  --warn-ink: #6E4300;
-  --info-bg: #E8F1FA;
+  --warn-bg: #FFF4E0;
+  --warn-ink: #5C3A00;
+  --info-bg: #EAF2FA;
   --info-ink: #0F3D66;
-  --shadow: 0 1px 2px rgba(9,80,61,.06), 0 10px 30px -18px rgba(9,80,61,.35);
-  --radius: 10px;
-  --radius-sm: 8px;
-  --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #071F18;
-    --surface: #0F2E25;
-    --surface-soft: #153B30;
-    --mint: #1C5A47;
-    --ink: #E7EFEA;
-    --ink-strong: #FFFFFF;
-    --muted: #9CC8BA;
-    --outline: #24584A;
-    --accent: #45C199;
-    --accent-2: #6FD6B3;
-    --on-accent: #06120E;
-    --rot: #E8534B;
-    --orange: #F3A733;
-    --blau: #6FB1E8;
-    --gruen: #5CC447;
-    --warn-bg: #3B2D0E;
-    --warn-ink: #FFD58A;
-    --info-bg: #12304A;
-    --info-ink: #BFDDF7;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    --page: #0B1512; --surface: #13211C; --tint: #1A3A2F; --line: #2C433A; --line-strong: #4F6D62;
+    --ink: #E3ECE8; --ink-strong: #FFFFFF; --muted: #9FB7AD; --accent: #3FB98F; --accent-dark: #3FB98F; --on-accent: #06120E;
+    --orange: #F3A733; --blau: #6FB1E8; --warn-bg: #33270F; --warn-ink: #FFD58A; --info-bg: #122A40; --info-ink: #BFDDF7;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #071F18;
-  --surface: #0F2E25;
-  --surface-soft: #153B30;
-  --mint: #1C5A47;
-  --ink: #E7EFEA;
-  --ink-strong: #FFFFFF;
-  --muted: #9CC8BA;
-  --outline: #24584A;
-  --accent: #45C199;
-  --accent-2: #6FD6B3;
-  --on-accent: #06120E;
-  --rot: #E8534B;
-  --orange: #F3A733;
-  --blau: #6FB1E8;
-  --gruen: #5CC447;
-  --warn-bg: #3B2D0E;
-  --warn-ink: #FFD58A;
-  --info-bg: #12304A;
-  --info-ink: #BFDDF7;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  --page: #0B1512; --surface: #13211C; --tint: #1A3A2F; --line: #2C433A; --line-strong: #4F6D62;
+  --ink: #E3ECE8; --ink-strong: #FFFFFF; --muted: #9FB7AD; --accent: #3FB98F; --accent-dark: #3FB98F; --on-accent: #06120E;
+  --orange: #F3A733; --blau: #6FB1E8; --warn-bg: #33270F; --warn-ink: #FFD58A; --info-bg: #122A40; --info-ink: #BFDDF7;
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font);
-  font-size: 17px;
-  line-height: 1.5;
-}
-button { font: inherit; color: inherit; }
-button:focus-visible, a:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; }
+button, select { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hidden { display: none !important; }
 
 /* ---------- Kopf ---------- */
-.topbar {
-  background: var(--accent);
-  color: var(--on-accent);
-  padding: 12px 16px;
-}
-:root[data-theme="dark"] .topbar, :root:not([data-theme="light"]) .topbar { }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .topbar { background: #006A4D; color: #FFFFFF; } }
-:root[data-theme="dark"] .topbar { background: #006A4D; color: #FFFFFF; }
-:root[data-theme="light"] .topbar { background: #006A4D; color: #FFFFFF; }
-.topbar-inner {
-  max-width: 720px; margin: 0 auto;
-  display: flex; align-items: center; gap: 12px;
-}
+.topbar { background: #006A4D; color: #FFFFFF; padding: 12px 16px; }
+.topbar-inner { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
 .logo { height: 34px; width: auto; display: block; }
-.topbar-title { font-weight: 600; font-size: 17px; margin-inline-start: auto; opacity: .95; }
-.topbar-sub { font-size: 13px; opacity: .85; }
+.topbar-title { font-weight: 600; font-size: 17px; margin-inline-start: auto; }
 
-.shell { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
+/* ---------- Sprachwahl ---------- */
+.langbar { background: var(--surface); border-bottom: 1px solid var(--line); }
+.langbar-inner { max-width: 760px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
+.globe { flex: none; width: 20px; height: 20px; color: var(--muted); }
+.lang-pick { position: relative; flex: 1 1 auto; max-width: 340px; }
+.lang-pick::after {
+  content: ""; position: absolute; inset-inline-end: 14px; top: 50%; width: 8px; height: 8px; margin-top: -6px;
+  border: solid var(--ink); border-width: 0 2px 2px 0; transform: rotate(45deg); pointer-events: none;
+}
+#lang-select {
+  appearance: none; -webkit-appearance: none; width: 100%; min-height: 42px;
+  padding: 8px 14px; padding-inline-end: 38px; border-radius: 2px;
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-strong);
+  font-size: 16px; font-weight: 600; cursor: pointer;
+}
+#lang-select:hover { border-color: var(--accent); }
 
-.intro { padding: 26px 0 8px; }
-.kicker {
-  font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--accent-2); margin: 0 0 6px;
-}
-h1 {
-  font-size: clamp(28px, 6vw, 36px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1;
-  margin: 0 0 8px; color: var(--ink-strong); text-wrap: balance;
-}
-.lede { margin: 0; color: var(--muted); max-width: 52ch; }
+.shell { max-width: 760px; margin: 0 auto; padding: 0 16px 80px; }
+
+.intro { padding: 28px 0 10px; }
+.kicker { font-size: 15px; font-weight: 600; color: var(--accent); margin: 0 0 4px; }
+h1 { font-size: clamp(27px, 6vw, 34px); font-weight: 700; line-height: 1.15; margin: 0 0 8px; color: var(--ink-strong); }
+.lede { margin: 0; color: var(--muted); max-width: 56ch; }
+.names-note { margin: 14px 0 0; font-size: 15px; color: var(--info-ink); background: var(--info-bg); border-inline-start: 4px solid var(--blau); padding: 10px 12px; max-width: 62ch; }
 body.embed .intro { padding-top: 16px; }
 body.embed .topbar { display: none; }
 
-/* ---------- Fragen entlang der Linie ---------- */
-.line { position: relative; margin-top: 18px; }
-.line::before {
-  content: ""; position: absolute; inset-inline-start: 15px; top: 14px; bottom: 14px; width: 4px;
-  background: var(--outline); border-radius: 2px;
-}
-.stop { position: relative; padding-inline-start: 44px; margin: 0 0 14px; }
+/* ---------- Fragen: nummerierte Schritte ---------- */
+.line { margin-top: 18px; counter-reset: schritt; }
+.stop { position: relative; padding-inline-start: 46px; margin: 0 0 12px; }
+.stop:not(.result):not(.hidden) { counter-increment: schritt; }
 .stop-dot {
-  position: absolute; inset-inline-start: 6px; top: 16px; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--paper); border: 4px solid var(--outline); transition: border-color .15s, background .15s;
+  position: absolute; inset-inline-start: 0; top: 14px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 2px solid var(--line-strong); color: var(--muted);
+  font-weight: 700; font-size: 16px;
 }
-.stop.active .stop-dot { border-color: var(--accent); background: var(--surface); }
-.stop.done .stop-dot { border-color: var(--accent); background: var(--accent); }
-.stop.done .stop-dot::after {
-  content: ""; position: absolute; left: 4px; top: 1px; width: 5px; height: 9px;
-  border: solid var(--on-accent); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
-}
-.stop.result .stop-dot { border-color: var(--accent); background: var(--accent); width: 26px; height: 26px; inset-inline-start: 4px; }
-.stop.result .stop-dot::after { display: none; }
+.stop-dot::before { content: counter(schritt); }
+.stop.active .stop-dot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.stop.done .stop-dot { background: var(--surface); border-color: var(--accent); color: var(--accent); }
+.stop.done .stop-dot::before { content: "✓"; }
+.stop.result .stop-dot { background: var(--accent-dark); border-color: var(--accent-dark); color: var(--on-accent); }
+.stop.result .stop-dot::before { content: "→"; }
+:root[dir="rtl"] .stop.result .stop-dot::before { content: "←"; }
 
-.card {
-  background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 16px 16px 14px;
-}
+.card { background: var(--surface); border: 1px solid var(--line); padding: 16px; }
+.stop.active > .card { border-color: var(--accent); border-width: 2px; padding: 15px; }
 .q-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.q-label { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 4px; }
-.q-title { font-size: 19px; font-weight: 700; margin: 0; color: var(--ink-strong); letter-spacing: -.01em; }
+.q-label { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+.q-title { font-size: 20px; font-weight: 700; margin: 0; color: var(--ink-strong); }
 .q-hint { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 
-.options { display: grid; gap: 8px; margin-top: 12px; grid-template-columns: 1fr; }
-@media (min-width: 520px) { .options.cols2 { grid-template-columns: 1fr 1fr; } }
+.options { display: grid; gap: 6px; margin-top: 12px; grid-template-columns: 1fr; }
+@media (min-width: 540px) { .options.cols2 { grid-template-columns: 1fr 1fr; } }
 .opt {
   display: flex; align-items: center; gap: 12px; text-align: start; width: 100%;
-  min-height: 52px; padding: 10px 14px; border-radius: 8px; cursor: pointer;
-  background: var(--surface-soft); border: 1.5px solid transparent; transition: border-color .12s, background .12s;
+  min-height: 54px; padding: 10px 12px; border-radius: 2px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line-strong);
 }
-.opt:hover { border-color: var(--outline); }
-.opt[aria-pressed="true"] { background: var(--mint); border-color: var(--accent); }
-.opt .opt-main { font-weight: 600; color: var(--ink-strong); }
+.opt:hover { border-color: var(--accent); background: var(--tint); }
+.opt[aria-pressed="true"] { background: var(--tint); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.opt .opt-main { font-weight: 600; color: var(--ink-strong); display: block; }
 .opt .opt-sub { font-size: 14px; color: var(--muted); display: block; }
-.opt .mark {
-  flex: none; width: 22px; height: 22px; border-radius: 4px; border: 2px solid var(--outline); position: relative;
-}
-.opt[aria-pressed="true"] .mark { border-color: var(--accent); background: var(--accent); }
-.opt[aria-pressed="true"] .mark::after {
-  content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+.opt .mark { flex: none; width: 22px; height: 22px; border: 2px solid var(--line-strong); position: relative; background: var(--surface); }
+.opt:not(.multi) .mark { border-radius: 50%; }
+.opt[aria-pressed="true"] .mark { border-color: var(--accent); }
+.opt:not(.multi)[aria-pressed="true"] .mark::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--accent); }
+.opt.multi[aria-pressed="true"] .mark { background: var(--accent); }
+.opt.multi[aria-pressed="true"] .mark::after {
+  content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 11px;
   border: solid var(--on-accent); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
 }
-.opt.multi .mark { border-radius: 6px; }
 
-/* beantwortete Frage: zusammengeklappt */
-.stop.done .card { padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+/* beantwortete Frage: eine Zeile */
+.stop.done .card { padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
 .stop.done .q-head, .stop.done .q-hint, .stop.done .options, .stop.done .actions { display: none; }
 .summary { flex: 1; min-width: 0; }
 .summary .q-label { margin: 0; }
 .summary .answer { font-weight: 600; color: var(--ink-strong); }
 .stop:not(.done) .summary { display: none; }
 .change {
-  background: none; border: 1.5px solid var(--accent); color: var(--accent); border-radius: 6px;
+  background: none; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px;
   padding: 6px 12px; font-size: 14px; font-weight: 600; cursor: pointer; flex: none;
 }
+.change:hover { background: var(--tint); }
 .stop:not(.done) .change { display: none; }
 
 /* ---------- Ergebnis ---------- */
-.result-card { padding: 0; overflow: hidden; }
-.result-head { padding: 16px 16px 12px; border-bottom: 1px dashed var(--outline); position: relative; }
-.result-head::before, .result-head::after {
-  content: ""; position: absolute; bottom: -11px; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--paper); border: 1px solid var(--outline);
-}
-.result-head::before { left: -12px; }
-.result-head::after { right: -12px; }
-.result-title { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 4px; }
-.result-name { font-size: 22px; font-weight: 700; margin: 0; color: var(--ink-strong); letter-spacing: -.015em; line-height: 1.25; }
+.result-card { padding: 0; border: 2px solid var(--accent-dark); }
+.result-head { padding: 14px 16px 12px; background: var(--accent-dark); color: var(--on-accent); }
+.result-title { font-size: 14px; font-weight: 600; margin: 0 0 2px; opacity: .85; }
+.result-name { font-size: 23px; font-weight: 700; margin: 0; line-height: 1.25; }
 .result-tagline { margin: 8px 0 0; }
+.tag { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border: 1px solid currentColor; }
 .result-body { padding: 14px 16px 16px; }
 .price-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.price { font-size: 38px; font-weight: 700; letter-spacing: -.03em; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+.price { font-size: 38px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
 .price-unit { color: var(--muted); font-weight: 600; }
-.price-next { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 4px; }
-.per-ride { font-size: 14px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
-.tag {
-  display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 4px; background: var(--mint); color: var(--ink);
-}
-.reasons { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.price-next, .per-ride { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.reasons { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.reasons.beachten { border-top: 0; padding-top: 0; margin-top: 8px; }
 .reasons li { display: flex; gap: 10px; align-items: flex-start; font-size: 15.5px; }
-.reasons li::before {
-  content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; margin-top: 7px; background: var(--gruen);
-}
-.reasons.beachten li::before { background: var(--orange); }
-.buy { margin-top: 12px; font-size: 14.5px; color: var(--muted); }
-.buy b { color: var(--ink); font-weight: 600; }
+.reasons li::before { content: "✓"; flex: none; width: 16px; font-weight: 700; color: var(--accent); }
+.reasons.beachten li::before { content: "!"; color: var(--orange); text-align: center; }
+.buy { margin: 14px 0 0; font-size: 15px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+.buy b { color: var(--ink-strong); font-weight: 600; }
 
-.alts { margin-top: 14px; display: grid; gap: 10px; }
-.alt {
-  background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius-sm); padding: 12px 14px;
-}
-/* Name links, Preis rechts - auf schmalen Bildschirmen rutscht der Preis
-   unter den Namen, statt rechts aus dem Kasten zu laufen. */
+.section-label { font-size: 16px; font-weight: 700; color: var(--ink-strong); margin: 22px 0 8px; }
+.alts { background: var(--surface); border: 1px solid var(--line); }
+.alt { padding: 12px 14px; }
+.alt + .alt { border-top: 1px solid var(--line); }
 .alt-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; }
 .alt-name { font-weight: 600; color: var(--ink-strong); flex: 1 1 200px; }
 .alt-price { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; flex: 0 1 auto; }
@@ -239,67 +179,39 @@ body.embed .topbar { display: none; }
 .alt-price .unit { font-weight: 500; color: var(--muted); }
 .alt-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
 .alt-sub .per { font-variant-numeric: tabular-nums; }
-.section-label { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 18px 0 8px; }
 
-.note { border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: flex-start; }
-.note.warn { background: var(--warn-bg); color: var(--warn-ink); }
-.note.info { background: var(--info-bg); color: var(--info-ink); }
-.note .ico { flex: none; width: 20px; height: 20px; margin-top: 1px; }
 .notes { display: grid; gap: 8px; margin-top: 14px; }
+.note { padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: flex-start; border-inline-start: 4px solid; }
+.note.warn { background: var(--warn-bg); color: var(--warn-ink); border-color: var(--orange); }
+.note.info { background: var(--info-bg); color: var(--info-ink); border-color: var(--blau); }
+.note .ico { flex: none; width: 20px; height: 20px; margin-top: 1px; }
 
-.docs { margin: 0; padding-inline-start: 20px; font-size: 15px; }
+.docs { margin: 0; padding: 12px 14px 12px 34px; padding-inline-start: 34px; font-size: 15px; background: var(--surface); border: 1px solid var(--line); }
 .docs li { margin: 3px 0; }
 
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-.btn {
-  border: 0; border-radius: 6px; padding: 11px 18px; font-weight: 600; cursor: pointer;
-  background: var(--accent); color: var(--on-accent);
-}
-.btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.btn { border: 1px solid var(--accent); border-radius: 2px; padding: 11px 18px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--on-accent); }
+.btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn.secondary { background: var(--surface); color: var(--accent); }
+.btn.secondary:hover { background: var(--tint); }
 
-.footer { margin-top: 28px; font-size: 13px; color: var(--muted); line-height: 1.55; }
+.footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); line-height: 1.55; }
 .footer a { color: var(--accent); }
 .stand { font-variant-numeric: tabular-nums; }
 
-/* ---------- Sprachwahl ---------- */
-.langbar { background: var(--surface); border-bottom: 1px solid var(--outline); }
-.langbar-inner { max-width: 720px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
-.globe { flex: none; width: 20px; height: 20px; color: var(--muted); }
-.lang-pick { position: relative; flex: 1 1 auto; max-width: 340px; }
-.lang-pick::after {
-  content: ""; position: absolute; inset-inline-end: 14px; top: 50%; width: 8px; height: 8px; margin-top: -6px;
-  border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(45deg); pointer-events: none;
-}
-#lang-select {
-  appearance: none; -webkit-appearance: none; width: 100%; min-height: 42px;
-  padding: 8px 14px; padding-inline-end: 38px; border-radius: 6px;
-  border: 1.5px solid var(--outline); background: var(--surface-soft); color: var(--ink-strong);
-  font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
-}
-#lang-select:hover { border-color: var(--accent-2); }
-#lang-select:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
-.names-note { margin: 12px 0 0; font-size: 14.5px; color: var(--info-ink); background: var(--info-bg); border-radius: var(--radius-sm); padding: 10px 12px; max-width: 60ch; }
-
-/* Schriften, die Inter nicht abdeckt. Sperrsatz (letter-spacing) zerreißt
-   arabische/persische Verbindungen und Devanagari-Ligaturen und ist in
-   CJK unüblich - dort aus. */
+/* Schriften, die die Systemschrift nicht überall abdeckt. */
 :root[lang="ar"] body, :root[lang="fa"] body { font-family: "Noto Sans Arabic", "Segoe UI", Tahoma, "Geeza Pro", var(--font); font-size: 18px; }
 :root[lang="hi"] body { font-family: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", var(--font); }
 :root[lang="zh"] body { font-family: var(--font), "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
 :root[lang="ja"] body { font-family: var(--font), "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", sans-serif; }
 :root[lang="ko"] body { font-family: var(--font), "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", sans-serif; }
-:root[lang="ar"] *, :root[lang="fa"] *, :root[lang="hi"] *, :root[lang="zh"] *, :root[lang="ja"] *, :root[lang="ko"] * { letter-spacing: 0 !important; }
-:root[dir="rtl"] .q-label, :root[dir="rtl"] .kicker, :root[dir="rtl"] .result-title, :root[dir="rtl"] .section-label { font-size: 13.5px; }
 :root[lang="ko"] .q-title, :root[lang="ko"] .opt-main { word-break: keep-all; }
-
-.hidden { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 @media print {
   body { background: #fff; color: #000; }
-  .topbar, .langbar, .change, .actions, .line::before, .stop-dot { display: none !important; }
+  .topbar, .langbar, .change, .actions, .stop-dot { display: none !important; }
   .stop { padding-inline-start: 0; }
-  .card { box-shadow: none; }
 }
 </style>
 </head>
@@ -347,8 +259,8 @@ body.embed .topbar { display: none; }
 {
   "stand": "2026-10-26",
   "jahre": [
-    { "key": "2026", "ab": "2026-01-01", "label": "gültig seit 1. Januar 2026" },
-    { "key": "2027", "ab": "2027-01-01", "label": "ab 1. Januar 2027 (VBB-Stand 24.9.2026, vorbehaltlich Tarifgenehmigung)" }
+    { "key": "2026", "ab": "2026-01-01", "hinweis": "" },
+    { "key": "2027", "ab": "2027-01-01", "hinweis": "VBB-Stand 24.9.2026, vorbehaltlich Tarifgenehmigung" }
   ],
   "fahrtenProMonat": { "einmal": 1, "tag": 3, "gelegentlich": 6, "wenig": 15, "oft": 40 },
   "potsdam": {
@@ -1841,41 +1753,41 @@ var TarifI18n = (function () {
     },
 
     // ---------------- Fußzeile ----------------
-    jahr_2026: {
-      de: 'gültig seit 1. Januar 2026',
-      en: 'valid since 1 January 2026',
-      uk: 'чинні з 1 січня 2026 року',
-      ru: 'действуют с 1 января 2026 г.',
-      ar: 'سارية منذ 1 يناير 2026',
-      fa: 'معتبر از 1 ژانویه 2026',
-      tr: '1 Ocak 2026’dan beri geçerli',
-      pl: 'obowiązujące od 1 stycznia 2026',
-      vi: 'áp dụng từ ngày 1 tháng 1 năm 2026',
-      fr: 'en vigueur depuis le 1er janvier 2026',
-      es: 'vigente desde el 1 de enero de 2026',
-      it: 'validi dal 1° gennaio 2026',
-      zh: '自 2026 年 1 月 1 日起有效',
-      ja: '2026年1月1日から有効',
-      ko: '2026년 1월 1일부터 적용',
-      hi: '1 जनवरी 2026 से मान्य'
+    jahr_seit: {
+      de: 'gültig seit 1. Januar {y}',
+      en: 'valid since 1 January {y}',
+      uk: 'чинні з 1 січня {y} року',
+      ru: 'действуют с 1 января {y} г.',
+      ar: 'سارية منذ 1 يناير {y}',
+      fa: 'معتبر از 1 ژانویه {y}',
+      tr: '1 Ocak {y} tarihinden beri geçerli',
+      pl: 'obowiązujące od 1 stycznia {y}',
+      vi: 'áp dụng từ ngày 1 tháng 1 năm {y}',
+      fr: 'en vigueur depuis le 1er janvier {y}',
+      es: 'vigente desde el 1 de enero de {y}',
+      it: 'validi dal 1° gennaio {y}',
+      zh: '自 {y} 年 1 月 1 日起有效',
+      ja: '{y}年1月1日から有効',
+      ko: '{y}년 1월 1일부터 적용',
+      hi: '1 जनवरी {y} से मान्य'
     },
-    jahr_2027: {
-      de: 'ab 1. Januar 2027 (VBB-Stand 24.9.2026, vorbehaltlich Tarifgenehmigung)',
-      en: 'from 1 January 2027 (VBB status 24 Sept 2026, subject to tariff approval)',
-      uk: 'з 1 січня 2027 року (стан VBB на 24.9.2026, за умови затвердження тарифу)',
-      ru: 'с 1 января 2027 г. (данные VBB от 24.9.2026, при условии утверждения тарифа)',
-      ar: 'اعتبارًا من 1 يناير 2027 (وفق بيانات VBB بتاريخ 24.9.2026، رهنًا بالموافقة على التعرفة)',
-      fa: 'از 1 ژانویه 2027 (طبق اعلام VBB در 24.9.2026، مشروط به تأیید تعرفه)',
-      tr: '1 Ocak 2027’den itibaren (VBB 24.9.2026 durumu, tarife onayına tabi)',
-      pl: 'od 1 stycznia 2027 (stan VBB z 24.9.2026, z zastrzeżeniem zatwierdzenia taryfy)',
-      vi: 'từ ngày 1 tháng 1 năm 2027 (theo VBB ngày 24.9.2026, còn chờ phê duyệt giá vé)',
-      fr: 'à partir du 1er janvier 2027 (état VBB au 24/09/2026, sous réserve d’approbation des tarifs)',
-      es: 'desde el 1 de enero de 2027 (datos del VBB al 24/09/2026, pendiente de aprobación tarifaria)',
-      it: 'dal 1° gennaio 2027 (stato VBB 24.9.2026, salvo approvazione tariffaria)',
-      zh: '自 2027 年 1 月 1 日起（VBB 2026 年 9 月 24 日公布，尚待票价审批）',
-      ja: '2027年1月1日から（VBB 2026年9月24日時点、運賃認可が前提）',
-      ko: '2027년 1월 1일부터 적용(VBB 2026년 9월 24일 기준, 요금 승인 전제)',
-      hi: '1 जनवरी 2027 से (VBB की 24.9.2026 की जानकारी, किराया स्वीकृति के अधीन)'
+    jahr_ab: {
+      de: 'ab 1. Januar {y}',
+      en: 'from 1 January {y}',
+      uk: 'з 1 січня {y} року',
+      ru: 'с 1 января {y} года',
+      ar: 'اعتبارًا من 1 يناير {y}',
+      fa: 'از 1 ژانویه {y}',
+      tr: '1 Ocak {y} tarihinden itibaren',
+      pl: 'od 1 stycznia {y}',
+      vi: 'từ ngày 1 tháng 1 năm {y}',
+      fr: 'à partir du 1er janvier {y}',
+      es: 'a partir del 1 de enero de {y}',
+      it: 'dal 1° gennaio {y}',
+      zh: '自 {y} 年 1 月 1 日起',
+      ja: '{y}年1月1日から',
+      ko: '{y}년 1월 1일부터',
+      hi: '1 जनवरी {y} से'
     },
     stand_prices: {
       de: 'Preise {label}.',
@@ -3374,22 +3286,22 @@ var TarifI18n = (function () {
       hi: 'केवल मोबाइल टिकट के रूप में'
     },
     b_dta3: {
-      de: 'Preis ab 2027 abgeleitet (60 % des Deutschlandtickets) – bitte im Kundenzentrum bestätigen lassen',
-      en: 'Price from 2027 is derived (60% of the Deutschlandticket) – please have it confirmed at the customer centre',
-      uk: 'Ціну з 2027 року розраховано (60 % від Deutschlandticket) — уточніть, будь ласка, у клієнтському центрі',
-      ru: 'Цена с 2027 года рассчитана (60 % от Deutschlandticket) – пожалуйста, уточните её в клиентском центре',
-      ar: 'السعر ابتداءً من 2027 محسوب تقديريًا (60% من Deutschlandticket) – يُرجى التأكد منه في مركز خدمة العملاء',
-      fa: 'قیمت از 2027 محاسبه‌شده است (60% قیمت Deutschlandticket) – لطفاً آن را در مرکز خدمات مشتریان تأیید کنید',
-      tr: '2027 fiyatı hesaplanmıştır (Deutschlandticket’in %60’ı) – lütfen müşteri merkezinde teyit ettirin',
-      pl: 'Cena od 2027 r. jest wyliczona (60% ceny Deutschlandticket) – prosimy o potwierdzenie w Centrum Obsługi Klienta',
-      vi: 'Giá từ năm 2027 là giá suy tính (60 % giá Deutschlandticket) – vui lòng xác nhận lại tại Trung tâm khách hàng',
-      fr: 'Prix à partir de 2027 calculé par déduction (60 % du Deutschlandticket) – merci de le faire confirmer au centre clients',
-      es: 'Precio a partir de 2027 calculado (60 % del Deutschlandticket): por favor, pida que se lo confirmen en el centro de atención al cliente',
-      it: 'Prezzo dal 2027 calcolato (60 % del Deutschlandticket) – si prega di farlo confermare al centro clienti',
-      zh: '2027 年起的价格为推算值（Deutschlandticket 的 60%）——请到客户服务中心确认',
-      ja: '2027年からの料金は推定値です（Deutschlandticketの60%）– カスタマーセンターでご確認ください',
-      ko: '2027년부터의 요금은 추정치입니다(Deutschlandticket의 60%) – 고객센터에서 확인해 주세요',
-      hi: '2027 से कीमत अनुमानित है (Deutschlandticket का 60%) – कृपया ग्राहक केंद्र में इसकी पुष्टि करवा लें'
+      de: 'Preis ab {y} abgeleitet (60 % des Deutschlandtickets) – bitte im Kundenzentrum bestätigen lassen',
+      en: 'Price from {y} is derived (60% of the Deutschlandticket) – please have it confirmed at the customer centre',
+      uk: 'Ціну з {y} року розраховано (60 % від Deutschlandticket) — уточніть, будь ласка, у клієнтському центрі',
+      ru: 'Цена с {y} года рассчитана (60 % от Deutschlandticket) – пожалуйста, уточните её в клиентском центре',
+      ar: 'السعر ابتداءً من {y} محسوب تقديريًا (60% من Deutschlandticket) – يُرجى التأكد منه في مركز خدمة العملاء',
+      fa: 'قیمت از {y} محاسبه‌شده است (60% قیمت Deutschlandticket) – لطفاً آن را در مرکز خدمات مشتریان تأیید کنید',
+      tr: '{y} fiyatı hesaplanmıştır (Deutschlandticket’in %60’ı) – lütfen müşteri merkezinde teyit ettirin',
+      pl: 'Cena od {y} r. jest wyliczona (60% ceny Deutschlandticket) – prosimy o potwierdzenie w Centrum Obsługi Klienta',
+      vi: 'Giá từ năm {y} là giá suy tính (60 % giá Deutschlandticket) – vui lòng xác nhận lại tại Trung tâm khách hàng',
+      fr: 'Prix à partir de {y} calculé par déduction (60 % du Deutschlandticket) – merci de le faire confirmer au centre clients',
+      es: 'Precio a partir de {y} calculado (60 % del Deutschlandticket): por favor, pida que se lo confirmen en el centro de atención al cliente',
+      it: 'Prezzo dal {y} calcolato (60 % del Deutschlandticket) – si prega di farlo confermare al centro clienti',
+      zh: '{y} 年起的价格为推算值（Deutschlandticket 的 60%）——请到客户服务中心确认',
+      ja: '{y}年からの料金は推定値です（Deutschlandticketの60%）– カスタマーセンターでご確認ください',
+      ko: '{y}년부터의 요금은 추정치입니다(Deutschlandticket의 60%) – 고객센터에서 확인해 주세요',
+      hi: '{y} से कीमत अनुमानित है (Deutschlandticket का 60%) – कृपया ग्राहक केंद्र में इसकी पुष्टि करवा लें'
     },
     f_vbb_monat: {
       de: 'Fahrrad: Monatskarte Fahrrad VBB-Gesamtnetz {p} – auch zum Deutschlandticket nötig.',
@@ -4168,6 +4080,11 @@ var TarifEngine = (function () {
     var r = { empfehlungen: [], hinweise: [], unterlagen: [], sofort: null, fahrtenProMonat: n };
     var PO = T.potsdam, BE = T.berlin, Z = T.zeit, F = T.fahrrad;
     var BEST = t('tag_best');
+    // Folgepreise, die nur hochgerechnet sind (Liste "abgeleitet" in den Daten), bekommen einen Hinweis.
+    function abgeleitetHinweis(feld) {
+      var next = T.jahre[j + 1];
+      return (next && (T.abgeleitet || []).indexOf(feld) >= 0) ? [t('b_dta3', { y: next.key })] : [];
+    }
 
     // ---------- Sofort-Antworten ----------
     if (a.wer === 'u6') {
@@ -4293,7 +4210,7 @@ var TarifEngine = (function () {
       return empfehlung('dticket-azubi', 'Deutschlandticket Zuschuss Ausbildung', Z.dticketAzubi, t('u_monat'), j, {
         tag: t('tag_azubi'),
         warum: [t('w_dta1'), t('w_dt2')],
-        beachten: [t('b_dta1'), t('b_dta2'), t('b_dta3')],
+        beachten: [t('b_dta1'), t('b_dta2')].concat(abgeleitetHinweis('dticketAzubi')),
         kaufen: t('buy_dta') });
     }
 
@@ -4511,7 +4428,13 @@ var TarifEngine = (function () {
     return I.info(lang).dir === 'rtl' ? h.replace(LATIN_NAME, '<bdi>$&</bdi>') : h;
   }
   function name(s) { return '<bdi>' + esc(s) + '</bdi>'; }
-  function jahrLabel(i) { var k = 'jahr_' + T.jahre[i].key; return I.has(k) ? t(k) : T.jahre[i].label; }
+  // Jahresetikett: "gültig seit 1. Januar 2026" für das laufende, "ab 1. Januar 2027" für das
+  // nächste Jahr; ein Zusatzhinweis aus den Daten erscheint nur auf Deutsch.
+  function jahrLabel(i) {
+    var y = T.jahre[i];
+    var s = t(i === jahrIndex ? 'jahr_seit' : 'jahr_ab', { y: y.key });
+    return s + (lang === 'de' && y.hinweis ? ' (' + y.hinweis + ')' : '');
+  }
   function formatDatum(iso) {
     var p = iso.split('-');
     try {

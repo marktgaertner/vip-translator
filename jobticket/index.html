@@ -9,158 +9,151 @@
 <style>
 /* ============================================================
    ViP Jobticket-Rechner - eine Datei, keine Abhängigkeiten.
-   Gleiches Designsystem wie Tarifberater und Live-Übersetzer:
-   ViP-Palette, Windrad-Farben als Akzente, eckige Bedienelemente.
+   Gestaltung "sachlich": eckig wie Haltestellenbeschilderung,
+   flache Flächen, feste Linien, keine Schatten, keine Pillen,
+   Systemschrift. Farben: ViP-Waldgrün #006A4D, Dunkelgrün #09503D,
+   Seegrün #008963; Windrad-Orange/Blau nur für Hinweise.
    ============================================================ */
 :root {
-  --paper: #DEF3F0; --surface: #FFFFFF; --surface-soft: #EEF8F5; --mint: #CDEAE0;
-  --ink: #09503D; --ink-strong: #0D1A15; --muted: #4C6A5F; --outline: #B9DDD3;
-  --accent: #006A4D; --accent-2: #008963; --on-accent: #FFFFFF;
-  --rot: #D5232A; --orange: #F39200; --blau: #1467A8; --gruen: #41A62A;
-  --warn-bg: #FFF1DB; --warn-ink: #6E4300; --info-bg: #E8F1FA; --info-ink: #0F3D66;
-  --bar-rabatt: #1467A8; --bar-ag: #006A4D; --bar-an: #9DBFB4;
-  --shadow: 0 1px 2px rgba(9,80,61,.06), 0 10px 30px -18px rgba(9,80,61,.35);
-  --radius: 10px; --radius-sm: 8px;
-  --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --page: #F2F5F4;
+  --surface: #FFFFFF;
+  --tint: #E5F1ED;
+  --line: #CBD8D3;
+  --line-strong: #8FA79E;
+  --ink: #16241F;
+  --ink-strong: #0B1612;
+  --muted: #55665F;
+  --accent: #006A4D;
+  --accent-dark: #09503D;
+  --on-accent: #FFFFFF;
+  --orange: #F39200;
+  --blau: #1467A8;
+  --warn-bg: #FFF4E0;
+  --warn-ink: #5C3A00;
+  --info-bg: #EAF2FA;
+  --info-ink: #0F3D66;
+  --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #071F18; --surface: #0F2E25; --surface-soft: #153B30; --mint: #1C5A47;
-    --ink: #E7EFEA; --ink-strong: #FFFFFF; --muted: #9CC8BA; --outline: #24584A;
-    --accent: #45C199; --accent-2: #6FD6B3; --on-accent: #06120E;
-    --warn-bg: #3B2D0E; --warn-ink: #FFD58A; --info-bg: #12304A; --info-ink: #BFDDF7;
-    --bar-rabatt: #6FB1E8; --bar-ag: #45C199; --bar-an: #4C7A6C;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    --page: #0B1512; --surface: #13211C; --tint: #1A3A2F; --line: #2C433A; --line-strong: #4F6D62;
+    --ink: #E3ECE8; --ink-strong: #FFFFFF; --muted: #9FB7AD; --accent: #3FB98F; --accent-dark: #3FB98F; --on-accent: #06120E;
+    --orange: #F3A733; --blau: #6FB1E8; --warn-bg: #33270F; --warn-ink: #FFD58A; --info-bg: #122A40; --info-ink: #BFDDF7;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #071F18; --surface: #0F2E25; --surface-soft: #153B30; --mint: #1C5A47;
-  --ink: #E7EFEA; --ink-strong: #FFFFFF; --muted: #9CC8BA; --outline: #24584A;
-  --accent: #45C199; --accent-2: #6FD6B3; --on-accent: #06120E;
-  --warn-bg: #3B2D0E; --warn-ink: #FFD58A; --info-bg: #12304A; --info-ink: #BFDDF7;
-  --bar-rabatt: #6FB1E8; --bar-ag: #45C199; --bar-an: #4C7A6C;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  --page: #0B1512; --surface: #13211C; --tint: #1A3A2F; --line: #2C433A; --line-strong: #4F6D62;
+  --ink: #E3ECE8; --ink-strong: #FFFFFF; --muted: #9FB7AD; --accent: #3FB98F; --accent-dark: #3FB98F; --on-accent: #06120E;
+  --orange: #F3A733; --blau: #6FB1E8; --warn-bg: #33270F; --warn-ink: #FFD58A; --info-bg: #122A40; --info-ink: #BFDDF7;
 }
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; }
-button, input, select { font: inherit; color: inherit; }
-button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; }
+button, select { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .hidden { display: none !important; }
 
+/* ---------- Kopf ---------- */
 .topbar { background: #006A4D; color: #FFFFFF; padding: 12px 16px; }
 .topbar-inner { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
 .logo { height: 34px; width: auto; display: block; }
-.topbar-title { font-weight: 600; font-size: 17px; margin-inline-start: auto; opacity: .95; }
-body.embed .topbar { display: none; }
+.topbar-title { font-weight: 600; font-size: 17px; margin-inline-start: auto; }
 
 .shell { max-width: 1040px; margin: 0 auto; padding: 0 16px 80px; }
-.intro { padding: 26px 0 18px; max-width: 680px; }
-.kicker, .label, .result-title, .section-label {
-  font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 6px;
-}
-h1 { font-size: clamp(28px, 6vw, 38px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 0 0 10px; color: var(--ink-strong); text-wrap: balance; }
+body.embed .topbar { display: none; }
+.intro { padding: 28px 0 18px; max-width: 680px; }
+.kicker { font-size: 15px; font-weight: 600; color: var(--accent); margin: 0 0 4px; }
+h1 { font-size: clamp(27px, 6vw, 36px); font-weight: 700; line-height: 1.15; margin: 0 0 8px; color: var(--ink-strong); }
 .lede { margin: 0; color: var(--muted); }
+input { font: inherit; color: inherit; }
+input:focus-visible { outline: 3px solid var(--orange); outline-offset: 1px; }
 
 .grid { display: grid; gap: 16px; grid-template-columns: 1fr; align-items: start; }
 @media (min-width: 880px) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); } .result-col { position: sticky; top: 16px; } }
 
-.card { background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 16px; }
 .card + .card { margin-top: 12px; }
-.q-title { font-size: 18px; font-weight: 700; margin: 0; color: var(--ink-strong); letter-spacing: -.01em; }
+.label { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+.q-title { font-size: 19px; font-weight: 700; margin: 0; color: var(--ink-strong); }
 .q-hint { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 
-/* Anzahl mit Plus/Minus */
-.stepper { display: flex; align-items: stretch; gap: 8px; margin-top: 12px; }
-.stepper button {
-  flex: none; width: 52px; border-radius: 6px; border: 1.5px solid var(--outline); background: var(--surface-soft);
-  font-size: 22px; font-weight: 600; cursor: pointer; color: var(--accent);
-}
-.stepper button:hover { border-color: var(--accent); }
-.num {
-  width: 100%; min-height: 52px; border-radius: 6px; border: 1.5px solid var(--outline); background: var(--surface);
-  padding: 8px 12px; font-size: 22px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; color: var(--ink-strong);
-}
-.num:focus { border-color: var(--accent); outline: none; }
+.stepper { display: flex; align-items: stretch; gap: 6px; margin-top: 12px; }
+.stepper button { flex: none; width: 52px; border-radius: 2px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 22px; font-weight: 600; cursor: pointer; color: var(--accent); }
+.stepper button:hover { border-color: var(--accent); background: var(--tint); }
+.num { width: 100%; min-height: 52px; border-radius: 2px; border: 1px solid var(--line-strong); background: var(--surface); padding: 8px 12px; font-size: 22px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; color: var(--ink-strong); }
+.num:focus { border-color: var(--accent); outline: none; box-shadow: inset 0 0 0 1px var(--accent); }
 
-/* Auswahl wie im Tarifberater */
-.options { display: grid; gap: 8px; margin-top: 12px; grid-template-columns: 1fr; }
-@media (min-width: 520px) { .options.cols2 { grid-template-columns: 1fr 1fr; } }
-.opt {
-  display: flex; align-items: center; gap: 12px; text-align: start; width: 100%; min-height: 52px; padding: 10px 14px;
-  border-radius: 8px; cursor: pointer; background: var(--surface-soft); border: 1.5px solid transparent; transition: border-color .12s, background .12s;
-}
-.opt:hover { border-color: var(--outline); }
-.opt[aria-pressed="true"] { background: var(--mint); border-color: var(--accent); }
+.options { display: grid; gap: 6px; margin-top: 12px; grid-template-columns: 1fr; }
+@media (min-width: 540px) { .options.cols2 { grid-template-columns: 1fr 1fr; } }
+.opt { display: flex; align-items: center; gap: 12px; text-align: start; width: 100%; min-height: 54px; padding: 10px 12px; border-radius: 2px; cursor: pointer; background: var(--surface); border: 1px solid var(--line-strong); }
+.opt:hover { border-color: var(--accent); background: var(--tint); }
+.opt[aria-pressed="true"] { background: var(--tint); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .opt-main { font-weight: 600; color: var(--ink-strong); display: block; }
 .opt-sub { font-size: 14px; color: var(--muted); display: block; font-variant-numeric: tabular-nums; }
-.mark { flex: none; width: 22px; height: 22px; border-radius: 4px; border: 2px solid var(--outline); position: relative; }
-.opt[aria-pressed="true"] .mark { border-color: var(--accent); background: var(--accent); }
-.opt[aria-pressed="true"] .mark::after {
-  content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
-  border: solid var(--on-accent); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
-}
+.mark { flex: none; width: 22px; height: 22px; border: 2px solid var(--line-strong); border-radius: 50%; position: relative; background: var(--surface); }
+.opt[aria-pressed="true"] .mark { border-color: var(--accent); }
+.opt[aria-pressed="true"] .mark::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--accent); }
 .custom { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .custom .num { font-size: 18px; text-align: end; max-width: 140px; min-height: 46px; }
 .custom span { color: var(--muted); font-size: 15px; }
 
-details.more { margin-top: 12px; }
+details.more { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
 details.more summary { cursor: pointer; font-weight: 600; color: var(--accent); list-style: none; display: flex; align-items: center; gap: 8px; }
 details.more summary::-webkit-details-marker { display: none; }
-details.more summary::before { content: ""; width: 8px; height: 8px; border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
-details.more[open] summary::before { transform: rotate(45deg); }
+details.more summary::before { content: "+"; width: 18px; height: 18px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; }
+details.more[open] summary::before { content: "−"; }
 .fields { display: grid; gap: 10px; margin-top: 10px; grid-template-columns: 1fr 1fr; }
 .field label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
-.field input { width: 100%; min-height: 46px; border-radius: 6px; border: 1.5px solid var(--outline); background: var(--surface); padding: 8px 12px; font-size: 17px; color: var(--ink-strong); }
-.field input:focus { border-color: var(--accent); outline: none; }
+.field input { width: 100%; min-height: 46px; border-radius: 2px; border: 1px solid var(--line-strong); background: var(--surface); padding: 8px 12px; font-size: 17px; color: var(--ink-strong); }
+.field input:focus { border-color: var(--accent); outline: none; box-shadow: inset 0 0 0 1px var(--accent); }
 .field.wide { grid-column: 1 / -1; }
 
-/* Ergebnis */
-.result-card { padding: 0; overflow: hidden; }
-.result-head { padding: 18px 16px 14px; border-bottom: 1px dashed var(--outline); }
-.big { font-size: clamp(30px, 7vw, 40px); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; color: var(--accent); font-variant-numeric: tabular-nums; }
-.big-sub { margin-top: 6px; color: var(--muted); font-size: 15.5px; }
-.big-sub b { color: var(--ink-strong); }
-.result-body { padding: 14px 16px 18px; }
-
-.split { margin-top: 4px; }
-.bar { display: flex; height: 18px; border-radius: 4px; overflow: hidden; background: var(--surface-soft); }
+.result-card { padding: 0; border: 2px solid var(--accent-dark); }
+.result-head { padding: 14px 16px; background: var(--accent-dark); color: var(--on-accent); }
+.result-title { font-size: 14px; font-weight: 600; margin: 0 0 2px; opacity: .85; }
+.big { font-size: clamp(32px, 7vw, 42px); font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.big-sub { margin-top: 6px; font-size: 15.5px; opacity: .9; }
+.big-sub b { font-weight: 700; }
+.result-body { padding: 14px 16px 16px; }
+.bar { display: flex; height: 16px; background: var(--page); border: 1px solid var(--line); }
 .bar span { display: block; height: 100%; transition: width .2s; }
 .bar span + span { border-inline-start: 2px solid var(--surface); }
 .legend { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; font-size: 15px; }
 .legend li { display: flex; align-items: center; gap: 10px; }
-.legend .sw { flex: none; width: 12px; height: 12px; border-radius: 3px; }
+.legend .sw { flex: none; width: 12px; height: 12px; }
 .legend .what { flex: 1; }
 .legend .val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink-strong); }
-
-.rows { margin: 16px 0 0; display: grid; gap: 0; }
-.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--outline); font-size: 15.5px; }
+:root { --bar-rabatt: #1467A8; --bar-ag: #006A4D; --bar-an: #A9BDB5; }
+.rows { margin: 16px 0 0; }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15.5px; }
 .row .k { color: var(--muted); }
 .row .v { font-weight: 700; color: var(--ink-strong); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.row.total .k { color: var(--ink-strong); font-weight: 600; }
-.row.total .v { color: var(--accent); font-size: 19px; }
-
-.note { border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; }
-.note.warn { background: var(--warn-bg); color: var(--warn-ink); }
-.note.info { background: var(--info-bg); color: var(--info-ink); }
+.row.total { border-top: 2px solid var(--ink-strong); }
+.row.total .k { color: var(--ink-strong); font-weight: 700; }
+.row.total .v { color: var(--accent); font-size: 20px; }
+.note { padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; border-inline-start: 4px solid; }
+.note.warn { background: var(--warn-bg); color: var(--warn-ink); border-color: var(--orange); }
+.note.info { background: var(--info-bg); color: var(--info-ink); border-color: var(--blau); }
 .note .ico { flex: none; width: 20px; height: 20px; margin-top: 1px; }
 .note b { font-weight: 700; }
 
 .cta { margin-top: 16px; }
-.cta h2 { font-size: 20px; margin: 0 0 4px; color: var(--ink-strong); letter-spacing: -.01em; }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-.btn { border: 0; border-radius: 6px; padding: 12px 18px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--on-accent); text-decoration: none; display: inline-block; }
-.btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.cta h2 { font-size: 20px; margin: 0 0 4px; color: var(--ink-strong); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.btn { border: 1px solid var(--accent); border-radius: 2px; padding: 12px 18px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--on-accent); text-decoration: none; display: inline-block; }
+.btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn.secondary { background: var(--surface); color: var(--accent); }
+.btn.secondary:hover { background: var(--tint); }
 
-.footer { margin-top: 28px; font-size: 13px; color: var(--muted); line-height: 1.55; max-width: 760px; }
+.footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); line-height: 1.55; max-width: 780px; }
 .footer a { color: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 @media print {
   body { background: #fff; color: #000; }
-  .topbar, .actions, .stepper button, details.more summary::before { display: none !important; }
-  .card { box-shadow: none; break-inside: avoid; }
+  .topbar, .actions, .stepper button { display: none !important; }
   .grid { grid-template-columns: 1fr 1fr; }
   .result-col { position: static; }
 }
@@ -200,7 +193,7 @@ details.more[open] summary::before { transform: rotate(45deg); }
       <section class="card">
         <p class="label">Schritt 2</p>
         <h2 class="q-title">Wie viel geben Sie pro Person dazu?</h2>
-        <p class="q-hint">Pro Monat. Mindestens 25 % des Ticketpreises – dann gibt es zusätzlich 5 % Rabatt.</p>
+        <p class="q-hint" id="zuschuss-hint">Pro Monat. Mindestens 25 % des Ticketpreises – dann gibt es zusätzlich 5 % Rabatt.</p>
         <div class="options cols2" id="zuschuss-opts" role="group" aria-label="Zuschuss pro Person"></div>
         <div class="custom" id="custom-row">
           <label class="sr-only" for="zuschuss-eigen">Eigener Zuschuss in Euro</label>
@@ -217,7 +210,7 @@ details.more[open] summary::before { transform: rotate(45deg); }
             <span class="opt-main">Zusätzlich zum Gehalt – steuerfrei</span>
             <span class="opt-sub">§ 3 Nr. 15 EStG: keine Lohnsteuer, keine Sozialabgaben. Wird bei der Entfernungspauschale der Beschäftigten angerechnet.</span></span></button>
           <button class="opt" type="button" data-steuer="pauschal"><span class="mark"></span><span>
-            <span class="opt-main">Mit 25 % Pauschalsteuer</span>
+            <span class="opt-main" id="pauschal-titel">Mit 25 % Pauschalsteuer</span>
             <span class="opt-sub">§ 40 Abs. 2 EStG: Sie zahlen die Steuer, dafür keine Anrechnung auf die Entfernungspauschale – auch bei Gehaltsumwandlung möglich.</span></span></button>
         </div>
         <details class="more" id="park-details">
@@ -271,14 +264,15 @@ details.more[open] summary::before { transform: rotate(45deg); }
 </main>
 
 <!-- ============================================================
-     DATEN - hier pflegen. Preise als Paar [2026, 2027].
+     DATEN - am einfachsten mit preispflege/index.html ändern.
+     Preise als Paar [laufendes Jahr, Folgejahr].
      ============================================================ -->
 <script id="jobticket-data" type="application/json">
 {
   "stand": "2026-11-02",
   "jahre": [
-    { "key": "2026", "ab": "2026-01-01", "label": "gültig seit 1. Januar 2026" },
-    { "key": "2027", "ab": "2027-01-01", "label": "ab 1. Januar 2027 (Deutschlandticket 66,80 €, Beschluss der Verkehrsministerkonferenz)" }
+    { "key": "2026", "ab": "2026-01-01", "hinweis": "" },
+    { "key": "2027", "ab": "2027-01-01", "hinweis": "Beschluss der Verkehrsministerkonferenz" }
   ],
   "dticket": [63.00, 66.80],
   "rabattProzent": 5,
@@ -394,11 +388,15 @@ var JobticketRechner = (function () {
   }
 
   var $ = function (id) { return document.getElementById(id); };
+  function pz(x) { return String(x).replace('.', ',') + ' %'; }
+  // Prozentsätze stehen in den Daten - die Texte folgen ihnen.
+  $('zuschuss-hint').textContent = 'Pro Monat. Mindestens ' + pz(D.mindestzuschussProzent) + ' des Ticketpreises – dann gibt es zusätzlich ' + pz(D.rabattProzent) + ' Rabatt.';
+  $('pauschal-titel').textContent = 'Mit ' + pz(D.pauschalsteuerProzent) + ' Pauschalsteuer';
   var basis = R.rechnen({ jahrIndex: jahrIndex, anzahl: 1, zuschuss: 'min' }, D);
 
   // Zuschuss-Optionen mit den Beträgen des gültigen Jahres
   var OPTS = [
-    { v: 'min', main: 'Mindestzuschuss', sub: eur(basis.mindestzuschuss) + ' (25 %) – Beschäftigte zahlen ' + eur(basis.jobPreis - basis.mindestzuschuss) },
+    { v: 'min', main: 'Mindestzuschuss', sub: eur(basis.mindestzuschuss) + ' (' + pz(D.mindestzuschussProzent) + ') – Beschäftigte zahlen ' + eur(basis.jobPreis - basis.mindestzuschuss) },
     { v: '30', main: '30 € pro Monat', sub: 'Beschäftigte zahlen ' + eur(basis.jobPreis - 30) },
     { v: 'voll', main: 'Ticket komplett', sub: eur(basis.jobPreis) + ' – für Beschäftigte kostenlos' },
     { v: 'eigen', main: 'Eigener Betrag', sub: 'frei wählbar' }
@@ -435,7 +433,7 @@ var JobticketRechner = (function () {
     $('r-an-sub').innerHTML = 'statt ' + eur(r.preis) + ' für das Deutschlandticket – <b>' + eur(r.vorteilJahr) + ' weniger im Jahr</b> pro Person.';
 
     var parts = [
-      { w: r.rabatt, c: 'var(--bar-rabatt)', t: 'Jobticket-Rabatt (5 %)' },
+      { w: r.rabatt, c: 'var(--bar-rabatt)', t: 'Jobticket-Rabatt (' + pz(D.rabattProzent) + ')' },
       { w: r.zuschuss, c: 'var(--bar-ag)', t: 'Ihr Zuschuss' },
       { w: r.beschaeftigte, c: 'var(--bar-an)', t: 'Eigenanteil Beschäftigte' }
     ];
@@ -467,8 +465,9 @@ var JobticketRechner = (function () {
 
     var naechstes = D.jahre[jahrIndex + 1];
     var rNext = naechstes ? R.rechnen({ jahrIndex: jahrIndex + 1, anzahl: 1, zuschuss: 'min' }, D) : null;
-    $('stand-line').textContent = 'Preise ' + D.jahre[jahrIndex].label + '.'
-      + (rNext ? ' Ab 1. Januar ' + naechstes.key + ': Deutschlandticket ' + eur(rNext.preis) + ', Mindestzuschuss ' + eur(rNext.mindestzuschuss) + ', Eigenanteil höchstens ' + eur(rNext.beschaeftigte) + '.' : '')
+    var jetzt = D.jahre[jahrIndex];
+    $('stand-line').textContent = 'Preise gültig seit 1. Januar ' + jetzt.key + (jetzt.hinweis ? ' (' + jetzt.hinweis + ')' : '') + '.'
+      + (rNext ? ' Ab 1. Januar ' + naechstes.key + (naechstes.hinweis ? ' (' + naechstes.hinweis + ')' : '') + ': Deutschlandticket ' + eur(rNext.preis) + ', Mindestzuschuss ' + eur(rNext.mindestzuschuss) + ', Eigenanteil höchstens ' + eur(rNext.beschaeftigte) + '.' : '')
       + ' Datenstand ' + D.stand.split('-').reverse().join('.') + '.';
 
     updateMail(r);
@@ -486,7 +485,7 @@ var JobticketRechner = (function () {
       '- Beschäftigte: etwa ' + r.anzahl,
       '- Zuschuss je Person und Monat: ' + eur(r.zuschuss),
       '- Eigenanteil der Beschäftigten: ' + eur(r.beschaeftigte),
-      '- Steuerliche Behandlung: ' + (state.steuer === 'pauschal' ? '25 % Pauschalsteuer' : 'steuerfrei zusätzlich zum Gehalt'),
+      '- Steuerliche Behandlung: ' + (state.steuer === 'pauschal' ? pz(D.pauschalsteuerProzent) + ' Pauschalsteuer' : 'steuerfrei zusätzlich zum Gehalt'),
       '',
       'Bitte melden Sie sich für ein Angebot.',
       '',

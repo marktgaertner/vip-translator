@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Preispflege – Tarifberater und Jobticket-Rechner</title>
+<style>
+/* Interne Seite für das Team: Preise im Tarifberater und im Jobticket-Rechner
+   ändern, ohne Code anzufassen. Gestaltung wie die beiden Tools ("sachlich"). */
+:root {
+  --page: #F2F5F4; --surface: #FFFFFF; --tint: #E5F1ED; --line: #CBD8D3; --line-strong: #8FA79E;
+  --ink: #16241F; --ink-strong: #0B1612; --muted: #55665F; --accent: #006A4D; --accent-dark: #09503D; --on-accent: #FFFFFF;
+  --orange: #F39200; --rot: #C41E25; --blau: #1467A8;
+  --warn-bg: #FFF4E0; --warn-ink: #5C3A00; --err-bg: #FCE8E8; --err-ink: #7A1216; --info-bg: #EAF2FA; --info-ink: #0F3D66; --ok-bg: #E5F3E8; --ok-ink: #1D4F28;
+  --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outline-offset: 1px; }
+.hidden { display: none !important; }
+.topbar { background: #006A4D; color: #fff; padding: 14px 16px; }
+.topbar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.topbar b { font-size: 18px; }
+.topbar span { opacity: .85; font-size: 15px; }
+.shell { max-width: 1100px; margin: 0 auto; padding: 22px 16px 80px; }
+h1 { font-size: 26px; margin: 0 0 6px; color: var(--ink-strong); }
+h2 { font-size: 19px; margin: 0 0 4px; color: var(--ink-strong); }
+p { margin: 0 0 10px; }
+.muted { color: var(--muted); }
+.steps { margin: 10px 0 20px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; counter-reset: s; }
+@media (max-width: 760px) { .steps { grid-template-columns: 1fr 1fr; } }
+.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); padding: 10px 12px 10px 48px; position: relative; font-size: 15px; }
+.steps li::before { content: counter(s); position: absolute; left: 10px; top: 10px; width: 26px; height: 26px; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 16px; margin-bottom: 14px; }
+.drop { display: block; border: 2px dashed var(--line-strong); background: var(--surface); padding: 26px 16px; text-align: center; cursor: pointer; }
+.drop.over { border-color: var(--accent); background: var(--tint); }
+.drop b { color: var(--ink-strong); font-size: 17px; }
+.btn { border: 1px solid var(--accent); border-radius: 2px; padding: 10px 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--on-accent); }
+.btn:hover { background: var(--accent-dark); }
+.btn.secondary { background: var(--surface); color: var(--accent); }
+.btn.secondary:hover { background: var(--tint); }
+.btn.small { padding: 4px 8px; font-size: 13px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.loaded { display: flex; gap: 10px 24px; flex-wrap: wrap; align-items: baseline; }
+.loaded b { color: var(--ink-strong); }
+
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
+.meta label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 3px; }
+.meta input { width: 100%; min-height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; padding: 6px 10px; background: var(--surface); }
+
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+caption { text-align: left; font-weight: 700; font-size: 16px; color: var(--ink-strong); padding: 14px 0 6px; }
+th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--ink-strong); }
+th.num, td.num { text-align: right; }
+td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+td.name { width: 46%; }
+td.name small { display: block; color: var(--muted); font-size: 12.5px; }
+td input { width: 110px; min-height: 36px; text-align: right; border: 1px solid var(--line-strong); border-radius: 2px; padding: 4px 8px; background: var(--surface); font-variant-numeric: tabular-nums; }
+td input.text { width: 100%; text-align: left; }
+tr.changed td { background: var(--tint); }
+tr.changed td.name::before { content: "geändert · "; color: var(--accent); font-size: 12px; font-weight: 700; }
+td.diff { color: var(--muted); font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+input.bad { border-color: var(--rot); background: var(--err-bg); }
+input.warn { border-color: var(--orange); background: var(--warn-bg); }
+.msg { font-size: 12.5px; display: block; }
+.msg.bad { color: var(--err-ink); } .msg.warn { color: var(--warn-ink); }
+@media (max-width: 700px) {
+  table, tbody, tr, td { display: block; width: 100%; }
+  thead { display: none; }
+  tr { border-bottom: 1px solid var(--line); padding: 6px 0; }
+  td { border: 0; padding: 3px 0; }
+  td.name { width: 100%; }
+  td[data-h]::before { content: attr(data-h) ": "; color: var(--muted); font-size: 13px; display: inline-block; min-width: 70px; }
+}
+
+.note { padding: 10px 14px; font-size: 15px; border-left: 4px solid; margin: 8px 0; }
+.note.ok { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--accent); }
+.note.warn { background: var(--warn-bg); color: var(--warn-ink); border-color: var(--orange); }
+.note.bad { background: var(--err-bg); color: var(--err-ink); border-color: var(--rot); }
+.note.info { background: var(--info-bg); color: var(--info-ink); border-color: var(--blau); }
+.note ul { margin: 4px 0 0; padding-left: 18px; }
+details summary { cursor: pointer; font-weight: 600; color: var(--accent); margin: 8px 0; }
+.sample td { font-size: 14px; }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: var(--page); padding: 1px 4px; }
+.sticky { position: sticky; bottom: 0; background: var(--surface); border-top: 2px solid var(--ink-strong); padding: 12px 16px; margin: 0 -16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; z-index: 5; }
+.sticky .status { margin-right: auto; font-weight: 600; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><b>ViP Preispflege</b><span>Tarifberater und Jobticket-Rechner – nur für den internen Gebrauch</span></div></header>
+
+<main class="shell">
+  <h1>Preise ändern ohne Programmierkenntnisse</h1>
+  <p class="muted">Diese Seite ändert nur die Preisdaten in der Datei des Tarifberaters oder des Jobticket-Rechners. Es wird nichts hochgeladen oder gespeichert – alles passiert in Ihrem Browser.</p>
+  <ol class="steps">
+    <li><b>Datei wählen</b><br>die aktuelle <code>index.html</code> des Tools</li>
+    <li><b>Preise eintragen</b><br>geänderte Felder werden grün markiert</li>
+    <li><b>Prüfen</b><br>läuft automatisch, Fehler werden rot angezeigt</li>
+    <li><b>Herunterladen</b><br>neue Datei auf dem Webspace ersetzen</li>
+  </ol>
+
+  <section class="card" id="load-card">
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".html,.htm,text/html" class="hidden">
+      <b>Datei hier ablegen oder klicken zum Auswählen</b><br>
+      <span class="muted"><code>tarifberater/index.html</code> oder <code>jobticket/index.html</code></span>
+    </label>
+    <div id="load-msg"></div>
+  </section>
+
+  <div id="editor" class="hidden">
+    <section class="card">
+      <div class="loaded" id="loaded"></div>
+      <div class="meta" id="meta"></div>
+      <div class="row-actions">
+        <button class="btn secondary" type="button" id="rollover">Jahreswechsel vorbereiten …</button>
+        <button class="btn secondary" type="button" id="reset">Alle Änderungen verwerfen</button>
+      </div>
+      <p class="muted" style="margin-top:10px;font-size:14px">Jahreswechsel: Das Folgejahr wird zum laufenden Jahr, dessen Preise werden übernommen, und ein neues Folgejahr wird angelegt (zunächst mit denselben Preisen). Sobald der VBB die neuen Preise veröffentlicht, tragen Sie sie in der rechten Spalte ein.</p>
+    </section>
+
+    <section class="card">
+      <h2>Preise</h2>
+      <p class="muted" style="font-size:14px">Beträge in Euro, Komma oder Punkt. Linke Spalte: gilt ab dem 1. Januar des laufenden Jahres. Rechte Spalte: Folgejahr – die Seite zeigt diesen Preis als „ab 1.1.“ an, wenn er abweicht, und schaltet am 1. Januar automatisch um.</p>
+      <div id="tables"></div>
+    </section>
+
+    <section class="card">
+      <h2>Prüfung</h2>
+      <div id="check"></div>
+      <details id="sample-box"><summary>Stichprobe: so rechnet die Seite mit den neuen Preisen</summary><div id="sample"></div></details>
+    </section>
+
+    <section class="card">
+      <h2>Änderungen</h2>
+      <div id="changes"></div>
+    </section>
+
+    <div class="sticky">
+      <span class="status" id="status"></span>
+      <button class="btn secondary" type="button" id="preview">Vorschau öffnen</button>
+      <button class="btn" type="button" id="download">Neue Datei herunterladen</button>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     KERN - reine Funktionen ohne DOM, getestet mit
+     node preispflege/test/pflege-test.mjs
+     ============================================================ -->
+<script id="pflege-kern">
+var PreisPflege = (function () {
+  'use strict';
+
+  var TOOLS = {
+    tarif: { dataId: 'tarif-data', name: 'Tarifberater' },
+    job: { dataId: 'jobticket-data', name: 'Jobticket-Rechner' }
+  };
+
+  function dataRegex(id) { return new RegExp('(<script id="' + id + '" type="application/json">)([\\s\\S]*?)(<\/script>)'); }
+
+  // Erkennt das Tool und liest den Datenblock.
+  function findData(html) {
+    for (var k in TOOLS) {
+      var m = html.match(dataRegex(TOOLS[k].dataId));
+      if (m) return { tool: k, name: TOOLS[k].name, data: JSON.parse(m[2]) };
+    }
+    return null;
+  }
+
+  function isPair(v) { return Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' && typeof v[1] === 'number'; }
+  function r2(x) { return Math.round(x * 100) / 100; }
+
+  // JSON im selben gut lesbaren Format wie von Hand gepflegt: Preispaare und
+  // kurze Objekte in einer Zeile, Preise immer mit zwei Nachkommastellen.
+  function serialize(v, ind) {
+    ind = ind || '';
+    var nx = ind + '  ';
+    if (isPair(v)) return '[' + v[0].toFixed(2) + ', ' + v[1].toFixed(2) + ']';
+    if (Array.isArray(v)) {
+      if (v.every(function (x) { return x === null || typeof x !== 'object'; })) return JSON.stringify(v).replace(/,/g, ', ');
+      return '[\n' + v.map(function (x) { return nx + inline(x); }).join(',\n') + '\n' + ind + ']';
+    }
+    if (v && typeof v === 'object') {
+      var keys = Object.keys(v);
+      var one = inline(v);
+      if (one.length + ind.length <= 110 && keys.every(function (k) { var x = v[k]; return !x || typeof x !== 'object' || isPair(x); })) return one;
+      return '{\n' + keys.map(function (k) { return nx + JSON.stringify(k) + ': ' + serialize(v[k], nx); }).join(',\n') + '\n' + ind + '}';
+    }
+    return JSON.stringify(v);
+  }
+  function inline(v) {
+    if (isPair(v)) return serialize(v);
+    if (Array.isArray(v)) return '[' + v.map(inline).join(', ') + ']';
+    if (v && typeof v === 'object') return '{ ' + Object.keys(v).map(function (k) { return JSON.stringify(k) + ': ' + inline(v[k]); }).join(', ') + ' }';
+    return JSON.stringify(v);
+  }
+
+  function replaceData(html, tool, data) {
+    var re = dataRegex(TOOLS[tool].dataId);
+    if (!re.test(html)) throw new Error('Datenblock nicht gefunden');
+    var json = '\n' + serialize(data) + '\n';
+    return html.replace(re, function (m, a, b, c) { return a + json + c; });
+  }
+
+  // Alle Preispaare und Einzelwerte mit Pfad, in Dateireihenfolge.
+  var SKIP = { stand: 1, jahre: 1, abgeleitet: 1 };
+  function flatten(data) {
+    var out = [];
+    (function walk(o, path) {
+      Object.keys(o).forEach(function (k) {
+        if (!path.length && SKIP[k]) return;
+        var v = o[k], p = path.concat(k);
+        if (isPair(v)) out.push({ path: p, kind: 'pair', value: v });
+        else if (typeof v === 'number') out.push({ path: p, kind: 'number', value: v });
+        else if (typeof v === 'string') out.push({ path: p, kind: 'text', value: v });
+        else if (v && typeof v === 'object' && !Array.isArray(v)) walk(v, p);
+      });
+    })(data, []);
+    return out;
+  }
+  function getPath(o, p) { return p.reduce(function (a, k) { return a == null ? a : a[k]; }, o); }
+  function setPath(o, p, v) { var last = p[p.length - 1]; getPath(o, p.slice(0, -1))[last] = v; }
+
+  // Jahreswechsel: Folgejahr wird laufendes Jahr, neues Folgejahr = Vorjahr + 1.
+  function yearRollover(data, heute) {
+    var d = JSON.parse(JSON.stringify(data));
+    var next = d.jahre[1];
+    var neu = String(Number(next.key) + 1);
+    d.jahre = [{ key: next.key, ab: next.ab, hinweis: '' }, { key: neu, ab: neu + '-01-01', hinweis: 'Preise noch nicht veröffentlicht' }];
+    flatten(d).forEach(function (f) { if (f.kind === 'pair') setPath(d, f.path, [f.value[1], f.value[1]]); });
+    if (heute) d.stand = heute;
+    return d;
+  }
+
+  // Beschriftung für Menschen. Unbekannte Felder zeigen ihren Pfad.
+  var NAMES = {
+    'fahrtenProMonat.einmal': 'Fahrten pro Monat bei „eine einzelne Fahrt“', 'fahrtenProMonat.tag': 'Fahrten bei „mehrere Fahrten an einem Tag“',
+    'fahrtenProMonat.gelegentlich': 'Fahrten pro Monat bei „ein paar Mal im Monat“', 'fahrtenProMonat.wenig': 'Fahrten pro Monat bei „1 bis 2 Tage pro Woche“',
+    'fahrtenProMonat.oft': 'Fahrten pro Monat bei „fast täglich“',
+    'potsdam.kurz': 'Kurzstrecke Potsdam', 'potsdam.ab': 'Einzelfahrausweis Potsdam AB', 'potsdam.ab4': '4-Fahrten-Karte Potsdam AB',
+    'potsdam.abc': 'Einzelfahrausweis Potsdam ABC', 'potsdam.abc4': '4-Fahrten-Karte Potsdam ABC',
+    'potsdam.anschlussC': 'Anschlussfahrausweis Bereich C', 'potsdam.anschlussBerlinAB': 'Anschlussfahrausweis Potsdam → Berlin AB',
+    'potsdam.tagAB': '24-Stunden-Karte Potsdam AB', 'potsdam.tagABC': '24-Stunden-Karte Potsdam ABC',
+    'berlin.ab': 'Einzelfahrausweis Berlin AB', 'berlin.abc': 'Einzelfahrausweis Berlin ABC', 'berlin.abc4': '4-Fahrten-Karte Berlin ABC',
+    'berlin.tagABC': '24-Stunden-Karte Berlin ABC', 'gesamtnetzTag': 'Tageskarte VBB-Gesamtnetz',
+    'zeit.umweltAB': 'VBB-Umweltkarte Potsdam AB', 'zeit.umweltABC': 'VBB-Umweltkarte Potsdam ABC', 'zeit.umweltBerlinABC': 'VBB-Umweltkarte Berlin ABC',
+    'zeit.gesamtnetz': 'VBB-Umweltkarte Gesamtnetz', 'zeit.azubiAB': 'Schüler/Azubi Potsdam AB', 'zeit.azubiABC': 'Schüler/Azubi Potsdam ABC',
+    'zeit.schuelerticketPotsdam': 'Schülerticket Potsdam', 'zeit.freizeitTicket': 'Freizeitticket', 'zeit.mobilAB': 'Mobilitätsticket Brandenburg Potsdam AB',
+    'zeit.mobilABC': 'Mobilitätsticket Brandenburg Potsdam ABC', 'zeit.dticket': 'Deutschlandticket', 'zeit.dticketJob': 'Deutschlandticket Job (Eigenanteil)',
+    'zeit.dticketAzubi': 'Deutschlandticket Zuschuss Ausbildung', 'zeit.dsemester': 'Deutschlandsemesterticket',
+    'fahrrad.potsdam': 'Fahrrad Potsdam', 'fahrrad.berlin': 'Fahrrad Berlin', 'fahrrad.gesamtnetz': 'Fahrrad VBB-Gesamtnetz',
+    'dticket': 'Deutschlandticket', 'rabattProzent': 'Jobticket-Rabatt in %', 'mindestzuschussProzent': 'Mindestzuschuss Arbeitgeber in % des Ticketpreises',
+    'pauschalsteuerProzent': 'Pauschalsteuer in %', 'soliProzent': 'Solidaritätszuschlag in % der Pauschalsteuer',
+    'faustwert.abzuegeBeschaeftigteProzent': 'Faustwert: Abzüge Beschäftigte in %', 'faustwert.svArbeitgeberProzent': 'Faustwert: Sozialabgaben Arbeitgeber in %',
+    'email': 'E-Mail-Adresse für Anfragen'
+  };
+  var PARTS = { regel: 'Normaltarif', erm: 'ermäßigt', gruppe: 'Kleingruppe bis 5 Personen', monat: 'Monatskarte', abo: 'im Abo, je Monat',
+    eigenanteil: 'Eigenanteil', gesamt: 'voller Preis', einzel: 'Einzelfahrt', einzelABC: 'Einzelfahrt ABC', tag: '24 Stunden', tagABC: '24 Stunden ABC',
+    monatAB: 'Monatskarte AB', monatABC: 'Monatskarte ABC', einmal: 'eine Fahrt', gelegentlich: 'ein paar Mal', wenig: '1–2 Tage pro Woche', oft: 'fast täglich' };
+  function labelFor(path) {
+    var full = path.join('.');
+    if (NAMES[full]) return NAMES[full];
+    for (var n = path.length - 1; n > 0; n--) {
+      var base = NAMES[path.slice(0, n).join('.')];
+      if (base) return base + ' – ' + path.slice(n).map(function (p) { return PARTS[p] || p; }).join(' – ');
+    }
+    return full;
+  }
+  var SECTIONS = { potsdam: 'Potsdam: Einzel-, 4-Fahrten- und Tageskarten', berlin: 'Berlin', gesamtnetzTag: 'VBB-Gesamtnetz', zeit: 'Zeitkarten und Abos',
+    fahrrad: 'Fahrrad', fahrtenProMonat: 'Annahmen für die Empfehlung', dticket: 'Deutschlandticket', faustwert: 'Faustwerte' };
+  function sectionFor(path) { return SECTIONS[path[0]] || (typeof path[0] === 'string' && /Prozent$|email/.test(path[0]) ? 'Regeln und Kontakt' : 'Weitere Werte'); }
+
+  // Abgeleitete Preise: auf Knopfdruck aus dem Deutschlandticket berechnen.
+  var DERIVED = {
+    'zeit.dticketJob': { faktor: 0.70, text: '70 % des Deutschlandtickets (25 % Arbeitgeber + 5 % Rabatt)' },
+    'zeit.dticketAzubi': { faktor: 0.60, text: '60 % des Deutschlandtickets' },
+    'zeit.dsemester': { faktor: 0.60, text: '60 % des Deutschlandtickets' }
+  };
+  function derive(data, path) {
+    var d = DERIVED[path.join('.')]; if (!d) return null;
+    var base = getPath(data, ['zeit', 'dticket']);
+    return [r2(base[0] * d.faktor), r2(base[1] * d.faktor)];
+  }
+
+  // Prüfregeln je Wert: Fehler blockieren den Download, Hinweise nicht.
+  function checkValue(f) {
+    var v = f.value;
+    if (f.kind === 'pair') {
+      if (!isFinite(v[0]) || !isFinite(v[1]) || v[0] <= 0 || v[1] <= 0) return { level: 'bad', text: 'Bitte zwei Beträge größer als 0 eintragen.' };
+      if (v[1] < v[0]) return { level: 'warn', text: 'Folgejahr günstiger als laufendes Jahr – richtig?' };
+      if (v[1] > v[0] * 1.10 + 0.005) return { level: 'warn', text: 'Mehr als 10 % teurer im Folgejahr – bitte prüfen.' };
+      return null;
+    }
+    if (f.kind === 'number') {
+      if (!isFinite(v) || v < 0) return { level: 'bad', text: 'Bitte eine Zahl ab 0 eintragen.' };
+      if (/Prozent$/.test(f.path[f.path.length - 1]) && v > 100) return { level: 'bad', text: 'Prozentwert über 100.' };
+      return null;
+    }
+    if (f.kind === 'text' && f.path[f.path.length - 1] === 'email' && !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v)) return { level: 'bad', text: 'Keine gültige E-Mail-Adresse.' };
+    return null;
+  }
+
+  function changes(orig, data) {
+    var a = {}; flatten(orig).forEach(function (f) { a[f.path.join('.')] = f.value; });
+    var out = [];
+    flatten(data).forEach(function (f) {
+      var k = f.path.join('.'), o = a[k];
+      if (JSON.stringify(o) !== JSON.stringify(f.value)) out.push({ path: f.path, label: labelFor(f.path), vorher: o, nachher: f.value });
+    });
+    ['stand'].forEach(function (k) { if (orig[k] !== data[k]) out.push({ path: [k], label: 'Datenstand', vorher: orig[k], nachher: data[k] }); });
+    if (JSON.stringify(orig.jahre) !== JSON.stringify(data.jahre)) out.push({ path: ['jahre'], label: 'Jahre', vorher: orig.jahre.map(function (j) { return j.key; }).join(' / '), nachher: data.jahre.map(function (j) { return j.key + (j.hinweis ? ' (' + j.hinweis + ')' : ''); }).join(' / ') });
+    return out;
+  }
+
+  // Lädt die Rechenlogik aus der geladenen Datei selbst - so prüft der
+  // Editor genau den Code, der später auf der Webseite läuft.
+  function scriptText(html, id) { var m = html.match(new RegExp('<script id="' + id + '">([\\s\\S]*?)<\/script>')); return m ? m[1] : null; }
+  function loadEngine(html, tool) {
+    if (tool === 'tarif') {
+      var i18n = scriptText(html, 'tarif-i18n'), eng = scriptText(html, 'tarif-engine');
+      if (!i18n || !eng) return null;
+      return new Function(i18n + '\n' + eng + '\nreturn TarifEngine;')();
+    }
+    var j = scriptText(html, 'jobticket-engine');
+    return j ? new Function(j + '\nreturn JobticketRechner;')() : null;
+  }
+
+  var WER = ['erwachsen', 'kind', 'u6', 'schueler', 'azubi', 'student', 'leistung', 'sb', 'senior'];
+  var WIE = ['einmal', 'tag', 'gelegentlich', 'wenig', 'oft'];
+  var WOHIN = ['ab', 'abc', 'berlin', 'weit'];
+  var EXTRAS = [[], ['kinder'], ['gruppe'], ['fahrrad'], ['hund'], ['kinder', 'gruppe', 'fahrrad', 'hund']];
+
+  // Komplettprüfung: alle Werte plus alle Antwortkombinationen durchrechnen.
+  function checkAll(html, tool, data) {
+    var errors = [], warnings = [];
+    flatten(data).forEach(function (f) {
+      var c = checkValue(f); if (!c) return;
+      (c.level === 'bad' ? errors : warnings).push(labelFor(f.path) + ': ' + c.text);
+    });
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.stand || '')) errors.push('Datenstand fehlt oder ist kein Datum.');
+    if (!data.jahre || data.jahre.length !== 2 || Number(data.jahre[1].key) !== Number(data.jahre[0].key) + 1) errors.push('Es müssen genau zwei aufeinanderfolgende Jahre angegeben sein.');
+    var engine, combos = 0, samples = [];
+    try { engine = loadEngine(html, tool); } catch (e) { errors.push('Rechenlogik der Datei lässt sich nicht laden: ' + e.message); }
+    if (engine && !errors.length) {
+      if (tool === 'tarif') {
+        var bad = 0;
+        WER.forEach(function (w) { WIE.forEach(function (h) { WOHIN.forEach(function (z) { EXTRAS.forEach(function (x) { [0, 1].forEach(function (j) {
+          combos++;
+          try {
+            var r = engine.empfehlen({ wer: w, wie: h, wohin: z, extras: x, jahrIndex: j }, data);
+            var ok = r.sofort || (r.empfehlungen.length && r.empfehlungen.every(function (e) { return e.name && (e.preis === null || (isFinite(e.preis) && e.preis >= 0)); }));
+            if (ok && JSON.stringify(r).indexOf('NaN') >= 0) ok = false;
+            if (!ok) bad++;
+          } catch (e) { bad++; }
+        }); }); }); }); });
+        if (bad) errors.push(bad + ' von ' + combos + ' Antwortkombinationen liefern kein sauberes Ergebnis.');
+        [['erwachsen', 'einmal', 'ab'], ['erwachsen', 'tag', 'ab'], ['erwachsen', 'gelegentlich', 'abc'], ['erwachsen', 'oft', 'abc'], ['erwachsen', 'oft', 'berlin'], ['schueler', 'oft', 'ab'], ['azubi', 'oft', 'weit']].forEach(function (c) {
+          var r = engine.empfehlen({ wer: c[0], wie: c[1], wohin: c[2], extras: [], jahrIndex: 0 }, data);
+          var e = r.empfehlungen[0];
+          samples.push({ frage: c.join(' · '), name: e.name, jetzt: e.preis, next: e.preisNext, einheit: e.einheit });
+        });
+      } else {
+        [0, 1].forEach(function (j) {
+          var r = engine.rechnen({ jahrIndex: j, anzahl: 1, zuschuss: 'min' }, data);
+          combos++;
+          if (Math.abs(r.rabatt + r.zuschuss + r.beschaeftigte - r.preis) > 0.011 || r.beschaeftigte < 0) errors.push('Rechnung ' + data.jahre[j].key + ' geht nicht auf.');
+          samples.push({ frage: data.jahre[j].key + ' · Mindestzuschuss', name: 'Eigenanteil Beschäftigte', jetzt: r.beschaeftigte, next: null, einheit: 'Zuschuss ' + r.zuschuss.toFixed(2).replace('.', ',') + ' € · Rabatt ' + r.rabatt.toFixed(2).replace('.', ',') + ' €' });
+        });
+      }
+    }
+    return { errors: errors, warnings: warnings, combos: combos, samples: samples };
+  }
+
+  return { TOOLS: TOOLS, findData: findData, serialize: serialize, replaceData: replaceData, flatten: flatten, getPath: getPath, setPath: setPath,
+    yearRollover: yearRollover, labelFor: labelFor, sectionFor: sectionFor, derive: derive, DERIVED: DERIVED, checkValue: checkValue,
+    changes: changes, checkAll: checkAll, isPair: isPair, r2: r2 };
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var P = PreisPflege;
+  var $ = function (id) { return document.getElementById(id); };
+  var st = null; // { html, fileName, tool, name, orig, data }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function eur(x) { return x == null ? '–' : x.toFixed(2).replace('.', ',') + ' €'; }
+  function f2(x) { return x.toFixed(2).replace('.', ','); }
+  function num(x) { return typeof x === 'number' ? String(x).replace('.', ',') : x; }
+  function parse(s) { s = String(s).trim().replace(/\s|€/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
+  function datum(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso; }
+
+  // ---------- Laden ----------
+  function load(file) {
+    var r = new FileReader();
+    r.onload = function () {
+      var html = String(r.result), found;
+      try { found = P.findData(html); } catch (e) { return fail('Der Datenblock in dieser Datei ist beschädigt: ' + e.message); }
+      if (!found) return fail('In dieser Datei steckt weder der Tarifberater noch der Jobticket-Rechner. Bitte die <code>index.html</code> aus dem jeweiligen Ordner wählen.');
+      st = { html: html, fileName: file.name, tool: found.tool, name: found.name, orig: found.data, data: JSON.parse(JSON.stringify(found.data)) };
+      $('load-msg').innerHTML = '';
+      $('editor').classList.remove('hidden');
+      renderAll();
+    };
+    r.readAsText(file, 'utf-8');
+  }
+  function fail(msg) { $('load-msg').innerHTML = '<div class="note bad">' + msg + '</div>'; $('editor').classList.add('hidden'); }
+  $('file').addEventListener('change', function (e) { if (e.target.files[0]) load(e.target.files[0]); });
+  var drop = $('drop');
+  ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { if (e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); });
+
+  // ---------- Darstellung ----------
+  function renderAll() { renderMeta(); renderTables(); refresh(); }
+
+  function renderMeta() {
+    var d = st.data;
+    $('loaded').innerHTML = '<span>Geladen: <b>' + esc(st.name) + '</b> (' + esc(st.fileName) + ')</span><span>Jahre <b>' + esc(d.jahre[0].key) + '</b> → <b>' + esc(d.jahre[1].key) + '</b></span>';
+    $('meta').innerHTML =
+      '<div><label for="m-stand">Datenstand (Tag der letzten Prüfung)</label><input type="date" id="m-stand" value="' + esc(d.stand) + '"></div>' +
+      d.jahre.map(function (j, i) {
+        return '<div><label for="m-h' + i + '">Zusatz zu ' + (i ? 'Folgejahr ' : 'laufendem Jahr ') + esc(j.key) + ' (optional, nur deutsch)</label><input type="text" id="m-h' + i + '" value="' + esc(j.hinweis || '') + '" placeholder="z. B. vorbehaltlich Tarifgenehmigung"></div>';
+      }).join('');
+    $('m-stand').addEventListener('input', function (e) { st.data.stand = e.target.value; refresh(); });
+    d.jahre.forEach(function (j, i) { $('m-h' + i).addEventListener('input', function (e) { st.data.jahre[i].hinweis = e.target.value; refresh(); }); });
+  }
+
+  function renderTables() {
+    var d = st.data, groups = {}, order = [];
+    P.flatten(d).forEach(function (f) {
+      var s = P.sectionFor(f.path);
+      if (!groups[s]) { groups[s] = []; order.push(s); }
+      groups[s].push(f);
+    });
+    // Preise zuerst, Annahmen und Regeln ans Ende.
+    var LAST = ['Regeln und Kontakt', 'Faustwerte', 'Annahmen für die Empfehlung', 'Weitere Werte'];
+    order.sort(function (a, b) { return LAST.indexOf(a) - LAST.indexOf(b); });
+    $('tables').innerHTML = order.map(function (s) {
+      var pairs = groups[s].some(function (f) { return f.kind === 'pair'; });
+      return '<table><caption>' + esc(s) + '</caption><thead><tr><th>Wert</th>' +
+        (pairs ? '<th class="num">' + esc(d.jahre[0].key) + '</th><th class="num">' + esc(d.jahre[1].key) + '</th><th class="num">Änderung</th>' : '<th class="num">Wert</th><th></th><th></th>') +
+        '</tr></thead><tbody>' + groups[s].map(rowHtml).join('') + '</tbody></table>';
+    }).join('');
+    $('tables').querySelectorAll('input[data-path]').forEach(function (inp) { inp.addEventListener('input', onInput); });
+    $('tables').querySelectorAll('button[data-derive]').forEach(function (b) { b.addEventListener('click', onDerive); });
+  }
+
+  function rowHtml(f) {
+    var key = f.path.join('.'), d = P.DERIVED[key];
+    var name = '<td class="name">' + esc(P.labelFor(f.path)) + (d ? '<small>' + esc(d.text) + ' <button class="btn secondary small" type="button" data-derive="' + key + '">berechnen</button></small>' : '') + '<span class="msg" data-msg="' + key + '"></span></td>';
+    if (f.kind === 'pair') {
+      return '<tr data-row="' + key + '">' + name +
+        '<td class="num" data-h="' + st.data.jahre[0].key + '"><input inputmode="decimal" data-path="' + key + '" data-i="0" value="' + f2(f.value[0]) + '" aria-label="' + esc(P.labelFor(f.path)) + ' ' + st.data.jahre[0].key + '"></td>' +
+        '<td class="num" data-h="' + st.data.jahre[1].key + '"><input inputmode="decimal" data-path="' + key + '" data-i="1" value="' + f2(f.value[1]) + '" aria-label="' + esc(P.labelFor(f.path)) + ' ' + st.data.jahre[1].key + '"></td>' +
+        '<td class="diff" data-diff="' + key + '"></td></tr>';
+    }
+    var cls = f.kind === 'text' ? ' class="text"' : '';
+    return '<tr data-row="' + key + '">' + name + '<td class="num" colspan="' + (f.kind === 'text' ? 3 : 1) + '"><input' + cls + (f.kind === 'number' ? ' inputmode="decimal"' : '') + ' data-path="' + key + '" value="' + esc(num(f.value)) + '" aria-label="' + esc(P.labelFor(f.path)) + '"></td>' + (f.kind === 'text' ? '' : '<td></td><td></td>') + '</tr>';
+  }
+
+  function onInput(e) {
+    var inp = e.target, path = inp.dataset.path.split('.'), cur = P.getPath(st.data, path);
+    if (P.isPair(cur) || Array.isArray(cur)) {
+      var v = cur.slice(); v[Number(inp.dataset.i)] = P.r2(parse(inp.value)); P.setPath(st.data, path, v);
+    } else if (typeof P.getPath(st.orig, path) === 'number') {
+      P.setPath(st.data, path, parse(inp.value));
+    } else {
+      P.setPath(st.data, path, inp.value.trim());
+    }
+    refresh();
+  }
+  function onDerive(e) {
+    var path = e.target.dataset.derive.split('.'), v = P.derive(st.data, path);
+    if (!v) return;
+    P.setPath(st.data, path, v);
+    document.querySelectorAll('input[data-path="' + path.join('.') + '"]').forEach(function (inp) { inp.value = f2(v[Number(inp.dataset.i)]); });
+    refresh();
+  }
+
+  // ---------- Prüfung, Änderungen, Status ----------
+  var timer = null;
+  function refresh() {
+    var origFlat = {}; P.flatten(st.orig).forEach(function (f) { origFlat[f.path.join('.')] = f.value; });
+    P.flatten(st.data).forEach(function (f) {
+      var key = f.path.join('.'), row = document.querySelector('[data-row="' + key + '"]'); if (!row) return;
+      row.classList.toggle('changed', JSON.stringify(origFlat[key]) !== JSON.stringify(f.value));
+      var c = P.checkValue(f), msg = row.querySelector('[data-msg="' + key + '"]');
+      msg.className = 'msg' + (c ? ' ' + c.level : ''); msg.textContent = c ? c.text : '';
+      row.querySelectorAll('input').forEach(function (inp) {
+        var bad = f.kind === 'pair' ? !(f.value[Number(inp.dataset.i)] > 0) : (c && c.level === 'bad');
+        inp.classList.toggle('bad', !!bad);
+        inp.classList.toggle('warn', !bad && !!c && c.level === 'warn');
+      });
+      var diff = row.querySelector('[data-diff="' + key + '"]');
+      if (diff && f.value[0] > 0) { var p = (f.value[1] / f.value[0] - 1) * 100; diff.textContent = (p >= 0 ? '+' : '−') + Math.abs(p).toFixed(1).replace('.', ',') + ' %'; }
+    });
+    var ch = P.changes(st.orig, st.data);
+    $('changes').innerHTML = ch.length
+      ? '<table><thead><tr><th>Wert</th><th class="num">vorher</th><th class="num">nachher</th></tr></thead><tbody>' + ch.map(function (c) {
+          var f = function (v) { return P.isPair(v) ? eur(v[0]) + ' / ' + eur(v[1]) : esc(typeof v === 'string' && /^\d{4}-\d\d-\d\d$/.test(v) ? datum(v) : num(v)); };
+          return '<tr><td>' + esc(c.label) + '</td><td class="num">' + f(c.vorher) + '</td><td class="num"><b>' + f(c.nachher) + '</b></td></tr>';
+        }).join('') + '</tbody></table>'
+      : '<p class="muted">Noch keine Änderungen.</p>';
+    clearTimeout(timer);
+    timer = setTimeout(runCheck, 150);
+  }
+
+  var last = null;
+  function runCheck() {
+    var r = P.checkAll(st.html, st.tool, st.data);
+    last = r;
+    var out = '';
+    if (r.errors.length) out += '<div class="note bad"><b>Bitte korrigieren – so kann die Datei nicht gespeichert werden:</b><ul>' + r.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div>';
+    if (r.warnings.length) out += '<div class="note warn"><b>Bitte kurz prüfen:</b><ul>' + r.warnings.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div>';
+    if (!r.errors.length) out += '<div class="note ok">Rechenlogik mit den neuen Werten geprüft: ' + r.combos + ' Kombinationen ohne Fehler.</div>';
+    $('check').innerHTML = out;
+    $('sample').innerHTML = r.samples.length ? '<table class="sample"><thead><tr><th>Fall</th><th>Empfehlung</th><th class="num">' + esc(st.data.jahre[0].key) + '</th><th class="num">' + esc(st.data.jahre[1].key) + '</th></tr></thead><tbody>' +
+      r.samples.map(function (s) { return '<tr><td>' + esc(s.frage) + '</td><td>' + esc(s.name) + '<br><span class="muted">' + esc(s.einheit || '') + '</span></td><td class="num">' + eur(s.jetzt) + '</td><td class="num">' + (s.next ? eur(s.next) : '<span class="muted">gleich</span>') + '</td></tr>'; }).join('') + '</tbody></table>' : '';
+    var n = P.changes(st.orig, st.data).length;
+    $('status').textContent = r.errors.length ? r.errors.length + ' Fehler – Download gesperrt' : (n ? n + ' Änderung' + (n === 1 ? '' : 'en') + ', Prüfung bestanden' : 'Keine Änderungen');
+    $('status').style.color = r.errors.length ? 'var(--err-ink)' : 'var(--ink-strong)';
+    $('download').disabled = !!r.errors.length || !n;
+    $('preview').disabled = !!r.errors.length;
+  }
+
+  function newHtml() { return P.replaceData(st.html, st.tool, st.data); }
+  $('download').addEventListener('click', function () {
+    if (!last || last.errors.length) return;
+    if (last.warnings.length && !confirm('Es gibt ' + last.warnings.length + ' Hinweis(e) zur Prüfung. Trotzdem herunterladen?')) return;
+    var blob = new Blob([newHtml()], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = st.fileName || 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    $('check').insertAdjacentHTML('beforeend', '<div class="note info"><b>Heruntergeladen.</b> Jetzt die alte Datei auf dem Webspace sichern (z. B. als <code>index-alt.html</code>) und durch die neue ersetzen. Danach die Seite einmal im Browser öffnen und eine Empfehlung durchklicken.</div>');
+  });
+  $('preview').addEventListener('click', function () {
+    var w = window.open(URL.createObjectURL(new Blob([newHtml()], { type: 'text/html;charset=utf-8' })), '_blank');
+    if (!w) alert('Der Browser hat das neue Fenster blockiert – bitte Pop-ups für diese Seite erlauben.');
+  });
+  $('reset').addEventListener('click', function () {
+    if (!confirm('Alle Änderungen verwerfen und die geladene Datei wiederherstellen?')) return;
+    st.data = JSON.parse(JSON.stringify(st.orig)); renderAll();
+  });
+  $('rollover').addEventListener('click', function () {
+    var j = st.data.jahre;
+    if (!confirm('Jahreswechsel: ' + j[1].key + ' wird das laufende Jahr (mit den Preisen aus der rechten Spalte), ' + (Number(j[1].key) + 1) + ' wird das neue Folgejahr.\n\nAm besten erst kurz vor oder nach dem 1. Januar ' + j[1].key + ' machen. Fortfahren?')) return;
+    var heute = new Date(), iso = heute.getFullYear() + '-' + String(heute.getMonth() + 1).padStart(2, '0') + '-' + String(heute.getDate()).padStart(2, '0');
+    st.data = P.yearRollover(st.data, iso); renderAll();
+  });
+})();
+</script>
+</body>
+</html>
