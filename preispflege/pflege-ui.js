@@ -14,16 +14,6 @@
   function datum(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso; }
   function heute() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
-  // Quelle der Seite: auf dem Webspace die Datei selbst (genau der Stand, der
-  // online ist); lokal geöffnet die beim Laden gesicherte Fassung.
-  function quelle() {
-    var url = location.href.split('#')[0].split('?')[0];
-    var lokal = function () { return window.PflegeQuelle || null; };
-    if (!window.fetch || location.protocol === 'file:') return Promise.resolve(lokal());
-    return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function (t) { return P.findData(t) ? t : lokal(); }, lokal);
-  }
-
   var st = null, root = null, $ = function (id) { return document.getElementById(id); };
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -34,7 +24,7 @@
     root.innerHTML = '<div class="pf-top"><div class="pf-top-in"><b>Preispflege</b><span id="pf-was">wird geladen …</span><a href="' + esc(location.pathname) + '">Fertig – zur Seite</a></div></div><div class="pf-main" id="pf-main"></div>';
     document.body.appendChild(root);
     document.documentElement.style.overflow = 'hidden';
-    quelle().then(function (html) {
+    PflegeDatei.quelle(function (t) { return !!P.findData(t); }).then(function (html) {
       var found = html && P.findData(html);
       if (!found) { $('pf-main').innerHTML = '<div class="pf-note bad">Die Preisdaten dieser Seite ließen sich nicht lesen.</div>'; return; }
       st = { html: html, tool: found.tool, name: found.name, orig: found.data, data: JSON.parse(JSON.stringify(found.data)) };
@@ -44,7 +34,7 @@
 
   function aufbauen() {
     $('pf-was').textContent = st.name + ' · Preise ' + st.data.jahre[0].key + ' und ' + st.data.jahre[1].key;
-    var kannSpeichern = !!window.showSaveFilePicker;
+    var kannSpeichern = PflegeDatei.kannDirekt;
     $('pf-main').innerHTML =
       '<ol class="pf-steps">' +
         '<li><b>Preise ändern</b><br>geänderte Zeilen werden grün, Fehler rot</li>' +
@@ -65,10 +55,7 @@
       if (!confirm('Alle Änderungen verwerfen?')) return;
       st.data = JSON.parse(JSON.stringify(st.orig)); alles();
     });
-    $('pf-preview').addEventListener('click', function () {
-      var w = window.open(URL.createObjectURL(new Blob([neu()], { type: 'text/html;charset=utf-8' })), '_blank');
-      if (!w) alert('Der Browser hat das neue Fenster blockiert – bitte Pop-ups erlauben.');
-    });
+    $('pf-preview').addEventListener('click', function () { PflegeDatei.vorschau(neu()); });
     $('pf-save').addEventListener('click', speichern);
     alles();
   }
@@ -185,32 +172,13 @@
 
   function neu() { return P.replaceData(st.html, st.tool, st.data); }
 
-  // Speichern: wo der Browser es kann (Chrome, Edge), direkt in eine Datei
-  // nach Wahl - etwa die index.html im Webspace-Ordner. Sonst als Download.
   function speichern() {
     if (!letzte || letzte.errors.length) return;
     if (letzte.warnings.length && !confirm('Es gibt ' + letzte.warnings.length + ' Hinweis(e) aus der Prüfung. Trotzdem speichern?')) return;
     var html = neu();
-    var fertig = function (wie) {
+    PflegeDatei.speichern(html, function (wie) {
       st.orig = JSON.parse(JSON.stringify(st.data)); st.html = html; auffrischen();
-      $('pf-check').insertAdjacentHTML('afterbegin', '<div class="pf-note info"><b>' + (wie === 'datei' ? 'Gespeichert.' : 'Heruntergeladen.') + '</b> ' +
-        (wie === 'datei' ? 'Liegt die Datei im Webspace-Ordner, ist der neue Stand online – einmal die Seite neu laden und eine Empfehlung durchklicken.'
-          : 'Die neue <code>index.html</code> liegt im Download-Ordner. Auf dem Webspace die alte Datei sichern (z. B. <code>index-alt.html</code>) und durch die neue ersetzen.') + '</div>');
-    };
-    if (window.showSaveFilePicker) {
-      window.showSaveFilePicker({ suggestedName: 'index.html', types: [{ description: 'Webseite', accept: { 'text/html': ['.html'] } }] })
-        .then(function (h) { return h.createWritable().then(function (w) { return w.write(html).then(function () { return w.close(); }); }); })
-        .then(function () { fertig('datei'); }, function (e) { if (e && e.name !== 'AbortError') herunterladen(html, fertig); });
-      return;
-    }
-    herunterladen(html, fertig);
-  }
-  function herunterladen(html, fertig) {
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
-    a.download = 'index.html';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-    fertig('download');
+      $('pf-check').insertAdjacentHTML('afterbegin', '<div class="pf-note info">' + PflegeDatei.hinweisNachSpeichern(wie) + '</div>');
+    });
   }
 })();

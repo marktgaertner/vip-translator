@@ -795,6 +795,11 @@ h1 { font-size: 22px; line-height: 1.2; margin: 0 0 4px; color: var(--ink-strong
   .app { display: block; }
 }
 </style>
+<script id="pflege-quelle">
+if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMContentLoaded', function () {
+  window.PflegeQuelle = '<!doctype html>\n' + document.documentElement.outerHTML;
+});
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -1324,7 +1329,9 @@ var KarteKern = (function () {
 </script>
 
 <script>
-(function () {
+// Start erst nach dem Laden: so kann die Standortpflege (?pflege) vorher die
+// unveränderte Seite sichern.
+document.addEventListener('DOMContentLoaded', function () {
   'use strict';
   var D = JSON.parse(document.getElementById('karte-data').textContent);
   var K = KarteKern;
@@ -1350,7 +1357,7 @@ var KarteKern = (function () {
     return '<button class="filter" type="button" data-f="' + k.key + '">' + esc(k.name) + ' <span class="n">' + count(k.key) + '</span></button>';
   }).join('');
   $('legend').innerHTML = KAT.map(function (k) { return '<span>' + sym(k.key) + esc(k.one) + '</span>'; }).join('');
-  $('foot').innerHTML = 'Stand ' + esc(D.stand.split('-').reverse().join('.')) + ' · Quelle: <a href="' + esc(D.quelle) + '" target="_blank" rel="noopener">swp-potsdam.de</a> · Fahrplan- und Ticketfragen: ViP-Infotelefon ' + esc(D.infotelefon);
+  $('foot').innerHTML = 'Stand ' + esc(D.stand.split('-').reverse().join('.')) + ' · Quelle: <a href="' + esc(D.quelle) + '" target="_blank" rel="noopener">swp-potsdam.de</a> · Fahrplan- und Ticketfragen: ViP-Infotelefon ' + esc(D.infotelefon) + ' · <a href="?pflege" style="color:var(--muted)">Standorte pflegen (ViP intern)</a>';
 
   function sichtbar() {
     var q = state.q.trim().toLowerCase();
@@ -1480,7 +1487,433 @@ var KarteKern = (function () {
   if (start && D.standorte.some(function (s) { return s.id === start; })) state.sel = start;
   renderList();
   if (merken || params.get('karte') === '1') initMap(); else if (state.sel) showDetail(state.sel);
+});
+</script>
+<!-- PFLEGE:START - eingebaut aus preispflege/ (dort ändern, dann node preispflege/einbauen.mjs) -->
+<script id="pflege-code">
+// Stil erst nach dem Sichern der Seite einfügen, sonst wanderte er in die gespeicherte Datei.
+if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMContentLoaded', function () {
+  var pflegeStil = document.createElement('style');
+  pflegeStil.textContent = "/* Preispflege-Ansicht (nur mit ?pflege). Alles unter #pf, damit die\n   Stile der Seite und des Editors sich nicht in die Quere kommen. */\n#pf { position: fixed; inset: 0; z-index: 99999; overflow-y: auto; background: #F2F5F4; color: #16241F;\n  font-family: \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif; font-size: 16px; line-height: 1.5; text-align: left; direction: ltr; }\n#pf * { box-sizing: border-box; letter-spacing: normal; }\n#pf button, #pf input { font: inherit; color: inherit; }\n#pf button:focus-visible, #pf input:focus-visible, #pf a:focus-visible { outline: 3px solid #F39200; outline-offset: 1px; }\n#pf .pf-top { background: #09503D; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 3; }\n#pf .pf-top-in { max-width: 1100px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }\n#pf .pf-top b { font-size: 18px; }\n#pf .pf-top span { opacity: .85; font-size: 14.5px; }\n#pf .pf-top a { margin-left: auto; color: #fff; border: 1px solid rgba(255,255,255,.7); padding: 6px 12px; text-decoration: none; font-weight: 600; font-size: 14px; }\n#pf .pf-main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }\n#pf h2 { font-size: 19px; margin: 0 0 4px; color: #0B1612; }\n#pf p { margin: 0 0 8px; }\n#pf .pf-muted { color: #55665F; font-size: 14.5px; }\n#pf .pf-card { background: #fff; border: 1px solid #CBD8D3; padding: 16px; margin-bottom: 14px; }\n#pf .pf-steps { margin: 0 0 14px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; counter-reset: s; }\n@media (max-width: 760px) { #pf .pf-steps { grid-template-columns: 1fr; } }\n#pf .pf-steps li { counter-increment: s; background: #fff; border: 1px solid #CBD8D3; padding: 10px 12px 10px 46px; position: relative; font-size: 15px; }\n#pf .pf-steps li::before { content: counter(s); position: absolute; left: 10px; top: 10px; width: 26px; height: 26px; background: #006A4D; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }\n#pf .pf-btn { border: 1px solid #006A4D; border-radius: 2px; padding: 10px 16px; font-weight: 600; cursor: pointer; background: #006A4D; color: #fff; }\n#pf .pf-btn:hover { background: #09503D; }\n#pf .pf-btn.pf-sec { background: #fff; color: #006A4D; }\n#pf .pf-btn.pf-sec:hover { background: #E5F1ED; }\n#pf .pf-btn.pf-small { padding: 3px 8px; font-size: 13px; }\n#pf .pf-btn:disabled { opacity: .45; cursor: not-allowed; }\n#pf .pf-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }\n#pf .pf-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }\n#pf .pf-meta label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }\n#pf .pf-meta input { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; }\n#pf table { width: 100%; border-collapse: collapse; font-size: 15px; }\n#pf caption { text-align: left; font-weight: 700; font-size: 16px; color: #0B1612; padding: 14px 0 6px; }\n#pf th { text-align: left; font-size: 13px; font-weight: 600; color: #55665F; padding: 6px 8px; border-bottom: 2px solid #0B1612; }\n#pf th.n, #pf td.n { text-align: right; }\n#pf td { padding: 4px 8px; border-bottom: 1px solid #CBD8D3; vertical-align: middle; }\n#pf td.pf-name { width: 46%; }\n#pf td.pf-name small { display: block; color: #55665F; font-size: 12.5px; }\n#pf td input { width: 110px; min-height: 36px; text-align: right; border: 1px solid #8FA79E; border-radius: 2px; padding: 4px 8px; background: #fff; font-variant-numeric: tabular-nums; }\n#pf td input.pf-text { width: 100%; text-align: left; }\n#pf tr.pf-changed td { background: #E5F1ED; }\n#pf tr.pf-changed td.pf-name::before { content: \"geändert · \"; color: #006A4D; font-size: 12px; font-weight: 700; }\n#pf td.pf-diff { color: #55665F; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }\n#pf input.pf-bad { border-color: #C41E25; background: #FCE8E8; }\n#pf input.pf-warn { border-color: #F39200; background: #FFF4E0; }\n#pf .pf-msg { font-size: 12.5px; display: block; }\n#pf .pf-msg.bad { color: #7A1216; } #pf .pf-msg.warn { color: #5C3A00; }\n@media (max-width: 700px) {\n  #pf table, #pf tbody, #pf tr, #pf td { display: block; width: 100%; }\n  #pf thead { display: none; }\n  #pf tr { border-bottom: 1px solid #CBD8D3; padding: 6px 0; }\n  #pf td { border: 0; padding: 3px 0; }\n  #pf td[data-h]::before { content: attr(data-h) \": \"; color: #55665F; font-size: 13px; display: inline-block; min-width: 60px; }\n}\n#pf .pf-note { padding: 10px 14px; font-size: 15px; border-left: 4px solid; margin: 8px 0; }\n#pf .pf-note.ok { background: #E5F3E8; color: #1D4F28; border-color: #006A4D; }\n#pf .pf-note.warn { background: #FFF4E0; color: #5C3A00; border-color: #F39200; }\n#pf .pf-note.bad { background: #FCE8E8; color: #7A1216; border-color: #C41E25; }\n#pf .pf-note.info { background: #EAF2FA; color: #0F3D66; border-color: #1467A8; }\n#pf .pf-note ul { margin: 4px 0 0; padding-left: 18px; }\n#pf details summary { cursor: pointer; font-weight: 600; color: #006A4D; margin: 8px 0; }\n#pf code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: #F2F5F4; padding: 1px 4px; }\n#pf .pf-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 2px solid #0B1612; z-index: 4; }\n#pf .pf-bar-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }\n#pf .pf-status { margin-right: auto; font-weight: 600; }\n/* Zusätze für die Standortpflege der Karte */\n#pf .pf-split { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 14px; align-items: start; }\n@media (max-width: 860px) { #pf .pf-split { grid-template-columns: 1fr; } }\n#pf .pf-listcard { position: sticky; top: 64px; max-height: calc(100vh - 160px); overflow-y: auto; padding: 12px; }\n#pf .pf-listhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }\n#pf .pf-gruppe { font-size: 13px; font-weight: 700; color: #55665F; margin: 10px 0 4px; }\n#pf .pf-item { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #CBD8D3; border-radius: 2px; padding: 7px 10px; margin-bottom: 4px; cursor: pointer; }\n#pf .pf-item:hover { background: #E5F1ED; }\n#pf .pf-item.sel { border-color: #006A4D; box-shadow: inset 4px 0 0 #006A4D; background: #E5F1ED; }\n#pf .pf-item b { display: block; font-size: 14.5px; color: #0B1612; }\n#pf .pf-item span { font-size: 13px; color: #55665F; }\n#pf .pf-formhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }\n#pf .pf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }\n@media (max-width: 700px) { #pf .pf-grid { grid-template-columns: 1fr; } }\n#pf .pf-f.wide { grid-column: 1 / -1; }\n#pf .pf-f label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }\n#pf .pf-f input, #pf .pf-f select, #pf .pf-f textarea { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; font: inherit; color: inherit; }\n#pf .pf-f textarea { resize: vertical; }\n#pf .pf-f small { display: block; color: #55665F; font-size: 12.5px; margin-top: 3px; }\n#pf .pf-check { display: flex; gap: 8px; align-items: center; font-size: 15px; margin: 4px 0 8px; }\n#pf .pf-check input { width: 18px; height: 18px; accent-color: #006A4D; }\n#pf .pf-regel { border: 1px solid #CBD8D3; padding: 8px 10px; margin-bottom: 6px; background: #FAFCFB; }\n#pf .pf-tage { display: flex; flex-wrap: wrap; gap: 4px 12px; }\n#pf .pf-tage label { display: inline-flex; gap: 4px; align-items: center; font-size: 14.5px; }\n#pf .pf-tage input { accent-color: #006A4D; width: 16px; height: 16px; }\n#pf .pf-zeit { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; font-size: 14.5px; }\n#pf .pf-zeit input { min-height: 34px; border: 1px solid #8FA79E; border-radius: 2px; padding: 2px 6px; }\n#pf .pf-label { font-size: 13px; margin-top: 4px; }\n#pf #pf-map { height: 300px; border: 1px solid #CBD8D3; }\n#pf .pf-poszeile { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }\n#pf .pf-poszeile p { margin: 0; }";
+  document.head.appendChild(pflegeStil);
+});
+
+/* ---- pflege-datei.js ---- */
+/* Gemeinsam für alle Pflege-Ansichten (?pflege): die eigene Datei lesen,
+   einen JSON-Datenblock ersetzen, speichern. */
+var PflegeDatei = (function () {
+  'use strict';
+
+  // Quelle der Seite: online die Datei selbst vom Server (genau der Stand,
+  // der veröffentlicht ist); lokal geöffnet die beim Laden gesicherte Fassung.
+  function quelle(passt) {
+    var lokal = function () { return window.PflegeQuelle || null; };
+    if (!window.fetch || location.protocol === 'file:') return Promise.resolve(lokal());
+    var url = location.href.split('#')[0].split('?')[0];
+    return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { return passt(t) ? t : lokal(); }, lokal);
+  }
+
+  function blockRegex(id) { return new RegExp('(<script id="' + id + '" type="application/json">)([\\s\\S]*?)(<\/script>)'); }
+  function lesen(html, id) { var m = html.match(blockRegex(id)); return m ? JSON.parse(m[2]) : null; }
+  function ersetzen(html, id, json) {
+    var re = blockRegex(id);
+    if (!re.test(html)) throw new Error('Datenblock ' + id + ' nicht gefunden');
+    return html.replace(re, function (m, a, b, c) { return a + '\n' + json.replace(/<\//g, '<\\/') + '\n' + c; });
+  }
+
+  // Speichern: in Chrome/Edge direkt in eine Datei nach Wahl (etwa die
+  // index.html im Webspace-Ordner), sonst als Download.
+  // fertig(wie) mit wie = 'datei' | 'download'.
+  function speichern(html, fertig) {
+    if (window.showSaveFilePicker) {
+      window.showSaveFilePicker({ suggestedName: 'index.html', types: [{ description: 'Webseite', accept: { 'text/html': ['.html'] } }] })
+        .then(function (h) { return h.createWritable().then(function (w) { return w.write(html).then(function () { return w.close(); }); }); })
+        .then(function () { fertig('datei'); }, function (e) { if (e && e.name !== 'AbortError') herunterladen(html, fertig); });
+      return;
+    }
+    herunterladen(html, fertig);
+  }
+  function herunterladen(html, fertig) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+    a.download = 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    fertig('download');
+  }
+  function vorschau(html) {
+    var w = window.open(URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })), '_blank');
+    if (!w) alert('Der Browser hat das neue Fenster blockiert – bitte Pop-ups erlauben.');
+  }
+  function hinweisNachSpeichern(wie) {
+    return wie === 'datei'
+      ? '<b>Gespeichert.</b> Liegt die Datei im Webspace-Ordner, ist der neue Stand online – einmal die Seite neu laden und prüfen.'
+      : '<b>Heruntergeladen.</b> Die neue <code>index.html</code> liegt im Download-Ordner. Auf dem Webspace die alte Datei sichern (z. B. <code>index-alt.html</code>) und durch die neue ersetzen.';
+  }
+  var kannDirekt = !!window.showSaveFilePicker;
+
+  return { quelle: quelle, lesen: lesen, ersetzen: ersetzen, speichern: speichern, vorschau: vorschau, hinweisNachSpeichern: hinweisNachSpeichern, kannDirekt: kannDirekt };
+})();
+
+/* ---- karte-pflege.js ---- */
+/* Standortpflege für die Karte (?pflege): Stellen hinzufügen, ändern,
+   entfernen; Position per Klick in die Karte; speichern wie die Preispflege. */
+
+// ---------- Kern ohne DOM (getestet in preispflege/test/karte-pflege-test.mjs) ----------
+var KartePflegeKern = (function () {
+  'use strict';
+  var NAMEN = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  var REIHE = [1, 2, 3, 4, 5, 6, 0];
+
+  // [1,2,3,4,5] -> "Montag – Freitag", [0,"F"] -> "Sonntag und Feiertage"
+  function tageLabel(t) {
+    var tage = REIHE.filter(function (d) { return t.indexOf(d) >= 0; }), teile = [], i = 0;
+    while (i < tage.length) {
+      var j = i;
+      while (j + 1 < tage.length && REIHE.indexOf(tage[j + 1]) === REIHE.indexOf(tage[j]) + 1) j++;
+      if (j - i >= 2) teile.push(NAMEN[tage[i]] + ' – ' + NAMEN[tage[j]]);
+      else for (var k = i; k <= j; k++) teile.push(NAMEN[tage[k]]);
+      i = j + 1;
+    }
+    var s = teile.join(', ');
+    if (t.indexOf('F') >= 0) s = s ? s + ' und Feiertage' : 'Feiertage';
+    return s;
+  }
+
+  // "24.12., 25.12. und 1.1." -> ["12-24", "12-25", "01-01"]
+  function parseGeschlossen(text) {
+    var out = [], fehler = [];
+    String(text || '').split(/[,;]|\bund\b/).map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (x) {
+      var m = x.match(/^(\d{1,2})\.(\d{1,2})\.?$/);
+      if (!m || +m[1] < 1 || +m[1] > 31 || +m[2] < 1 || +m[2] > 12) { fehler.push(x); return; }
+      out.push((m[2].length < 2 ? '0' : '') + m[2] + '-' + (m[1].length < 2 ? '0' : '') + m[1]);
+    });
+    return { tage: out, fehler: fehler };
+  }
+  function formatGeschlossen(list) {
+    return (list || []).map(function (md) { var p = md.split('-'); return +p[1] + '.' + +p[0] + '.'; }).join(', ');
+  }
+
+  function slug(name, vorhanden) {
+    var s = String(name || 'stelle').toLowerCase()
+      .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'stelle';
+    var id = s, n = 2;
+    while (vorhanden.indexOf(id) >= 0) id = s + '-' + n++;
+    return id;
+  }
+
+  function neueStelle(lat, lon, vorhanden) {
+    return { id: slug('neue-stelle', vorhanden), name: 'Neue Verkaufsstelle', kategorie: 'verkaufsstelle', adresse: '', plz: '', ort: 'Potsdam',
+      stadtteil: '', lat: Math.round(lat * 1e6) / 1e6, lon: Math.round(lon * 1e6) / 1e6, genau: true, angebot: ['Fahrscheine des VBB'] };
+  }
+
+  // Lesbares JSON: Objekte untereinander, kurze Listen und Zeit-Regeln in einer Zeile.
+  function serialize(v, ind) {
+    ind = ind || '';
+    var nx = ind + '  ';
+    var flach = function (x) { return x === null || typeof x !== 'object'; };
+    if (Array.isArray(v)) {
+      if (!v.length) return '[]';
+      if (v.every(flach)) { var one = '[' + v.map(function (x) { return JSON.stringify(x); }).join(', ') + ']'; if (one.length + ind.length < 100) return one; }
+      if (v.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).every(function (k) { return flach(x[k]) || (Array.isArray(x[k]) && x[k].every(flach)); }); })) {
+        var zeilen = v.map(function (x) { return '{ ' + Object.keys(x).map(function (k) { return JSON.stringify(k) + ': ' + serialize(x[k], nx); }).join(', ') + ' }'; });
+        if (zeilen.every(function (z) { return z.length + nx.length < 120; })) return '[\n' + zeilen.map(function (z) { return nx + z; }).join(',\n') + '\n' + ind + ']';
+      }
+      return '[\n' + v.map(function (x) { return nx + serialize(x, nx); }).join(',\n') + '\n' + ind + ']';
+    }
+    if (v && typeof v === 'object') return '{\n' + Object.keys(v).map(function (k) { return nx + JSON.stringify(k) + ': ' + serialize(v[k], nx); }).join(',\n') + '\n' + ind + '}';
+    return JSON.stringify(v);
+  }
+
+  // Aufräumen vor dem Speichern: leere Felder weg, Tage-Beschriftung neu.
+  function bereinigen(D) {
+    var d = JSON.parse(JSON.stringify(D));
+    d.standorte.forEach(function (s) {
+      ['stadtteil', 'lage', 'telefon', 'email', 'hinweis', 'geschlossenText'].forEach(function (k) { if (s[k] != null && !String(s[k]).trim()) delete s[k]; });
+      if (s.geschlossen && !s.geschlossen.length) delete s.geschlossen;
+      if (s.angebot) { s.angebot = s.angebot.map(function (a) { return a.trim(); }).filter(Boolean); if (!s.angebot.length) delete s.angebot; }
+      if (s.zeiten) s.zeiten.forEach(function (z) { z.tage = tageLabel(z.t); });
+      if (s.genau !== false) delete s.genau;
+    });
+    return d;
+  }
+
+  function aenderungen(orig, neu) {
+    var a = {}, b = {}, out = [];
+    orig.standorte.forEach(function (s) { a[s.id] = s; });
+    neu.standorte.forEach(function (s) { b[s.id] = s; });
+    neu.standorte.forEach(function (s) {
+      if (!a[s.id]) out.push({ art: 'neu', name: s.name });
+      else if (JSON.stringify(a[s.id]) !== JSON.stringify(s)) out.push({ art: 'geändert', name: s.name });
+    });
+    orig.standorte.forEach(function (s) { if (!b[s.id]) out.push({ art: 'entfernt', name: s.name }); });
+    if (orig.stand !== neu.stand) out.push({ art: 'Datenstand', name: neu.stand });
+    return out;
+  }
+
+  return { tageLabel: tageLabel, parseGeschlossen: parseGeschlossen, formatGeschlossen: formatGeschlossen, slug: slug,
+    neueStelle: neueStelle, serialize: serialize, bereinigen: bereinigen, aenderungen: aenderungen };
+})();
+
+// ---------- Oberfläche ----------
+(function () {
+  'use strict';
+  if (!/[?&]pflege(=|&|$)/.test(location.search)) return;
+  var PK = KartePflegeKern;
+  var KAT = { kundenzentrum: 'Kundenzentrum', serviceagentur: 'Serviceagentur', verkaufsstelle: 'Verkaufsstelle (nur Tickets)' };
+  var KURZ = [['Mo', 1], ['Di', 2], ['Mi', 3], ['Do', 4], ['Fr', 5], ['Sa', 6], ['So', 0], ['Feiertag', 'F']];
+  var st = null, root = null, karte = null, punkte = {}, $ = function (id) { return document.getElementById(id); };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function stelle(id) { return st.data.standorte.filter(function (s) { return s.id === id; })[0]; }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    root = document.createElement('div');
+    root.id = 'pf';
+    root.setAttribute('role', 'dialog');
+    root.setAttribute('aria-label', 'Standortpflege');
+    root.innerHTML = '<div class="pf-top"><div class="pf-top-in"><b>Standortpflege</b><span id="pf-was">wird geladen …</span><a href="' + esc(location.pathname) + '">Fertig – zur Karte</a></div></div><div class="pf-main" id="pf-main"></div>';
+    document.body.appendChild(root);
+    document.documentElement.style.overflow = 'hidden';
+    PflegeDatei.quelle(function (t) { return !!PflegeDatei.lesen(t, 'karte-data'); }).then(function (html) {
+      var d = html && PflegeDatei.lesen(html, 'karte-data');
+      if (!d) { $('pf-main').innerHTML = '<div class="pf-note bad">Die Standortdaten dieser Seite ließen sich nicht lesen.</div>'; return; }
+      st = { html: html, orig: PK.bereinigen(d), data: PK.bereinigen(d), sel: null };
+      aufbauen();
+    });
+  });
+
+  function aufbauen() {
+    $('pf-main').innerHTML =
+      '<ol class="pf-steps">' +
+        '<li><b>Stelle wählen oder neu anlegen</b><br>Position per Klick in die Karte</li>' +
+        '<li><b>Angaben ändern</b><br>Öffnungszeiten, Angebot, Kontakt</li>' +
+        '<li><b>Speichern</b><br>' + (PflegeDatei.kannDirekt ? 'direkt über die <code>index.html</code> im Webspace-Ordner' : 'neue <code>index.html</code> auf dem Webspace ersetzen') + '</li>' +
+      '</ol>' +
+      '<div class="pf-split">' +
+        '<section class="pf-card pf-listcard"><div class="pf-listhead"><h2>Stellen</h2><button class="pf-btn" type="button" id="pf-neu">+ Neue Stelle</button></div>' +
+          '<div class="pf-meta" style="margin:0 0 8px"><div><label for="pf-stand">Datenstand</label><input type="date" id="pf-stand"></div></div><div id="pf-liste"></div></section>' +
+        '<section class="pf-card"><h2>Position</h2>' +
+          '<div class="pf-poszeile"><p class="pf-muted" id="pf-poshint">Stelle wählen, dann in die Karte klicken oder den Punkt ziehen.</p>' +
+          '<button class="pf-btn pf-sec pf-small" type="button" id="pf-suche">Position aus Adresse suchen</button></div><div id="pf-map"></div>' +
+          '<div id="pf-form" style="margin-top:16px"><p class="pf-muted">Links eine Stelle auswählen oder „Neue Stelle“ anlegen.</p></div></section>' +
+      '</div>' +
+      '<section class="pf-card"><h2>Prüfung und Änderungen</h2><div id="pf-check"></div><div id="pf-changes"></div></section>' +
+      '<div class="pf-bar"><div class="pf-bar-in"><span class="pf-status" id="pf-status"></span>' +
+        '<button class="pf-btn pf-sec" type="button" id="pf-preview">Vorschau</button><button class="pf-btn" type="button" id="pf-save">Speichern</button></div></div>';
+    $('pf-stand').value = st.data.stand;
+    $('pf-stand').addEventListener('input', function (e) { st.data.stand = e.target.value; pruefen(); });
+    $('pf-neu').addEventListener('click', neu);
+    $('pf-suche').addEventListener('click', adresseSuchen);
+    $('pf-preview').addEventListener('click', function () { PflegeDatei.vorschau(html()); });
+    $('pf-save').addEventListener('click', speichern);
+    $('pf-liste').addEventListener('click', function (e) { var b = e.target.closest('[data-id]'); if (b) waehlen(b.dataset.id); });
+    karteAufbauen();
+    liste(); pruefen();
+  }
+
+  function liste() {
+    var gruppen = ['kundenzentrum', 'serviceagentur', 'verkaufsstelle'];
+    $('pf-liste').innerHTML = gruppen.map(function (k) {
+      var ss = st.data.standorte.filter(function (s) { return s.kategorie === k; });
+      if (!ss.length) return '';
+      return '<div class="pf-gruppe">' + esc(KAT[k]) + ' (' + ss.length + ')</div>' + ss.map(function (s) {
+        return '<button type="button" class="pf-item' + (s.id === st.sel ? ' sel' : '') + '" data-id="' + esc(s.id) + '"><b>' + esc(s.name || '(ohne Namen)') + '</b><span>' + esc(s.adresse || 'Adresse fehlt') + '</span></button>';
+      }).join('');
+    }).join('');
+    $('pf-was').textContent = st.data.standorte.length + ' Stellen';
+  }
+
+  // ---------- Formular ----------
+  function feld(k, label, wert, opts) {
+    opts = opts || {};
+    var id = 'pf-f-' + k;
+    if (opts.area) return '<div class="pf-f' + (opts.wide ? ' wide' : '') + '"><label for="' + id + '">' + esc(label) + '</label><textarea id="' + id + '" data-k="' + k + '" rows="' + (opts.rows || 3) + '">' + esc(wert) + '</textarea>' + (opts.hilfe ? '<small>' + esc(opts.hilfe) + '</small>' : '') + '</div>';
+    return '<div class="pf-f' + (opts.wide ? ' wide' : '') + '"><label for="' + id + '">' + esc(label) + '</label><input id="' + id + '" data-k="' + k + '" value="' + esc(wert) + '"' + (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') + '>' + (opts.hilfe ? '<small>' + esc(opts.hilfe) + '</small>' : '') + '</div>';
+  }
+
+  function waehlen(id) {
+    st.sel = id;
+    var s = stelle(id); if (!s) return;
+    $('pf-form').innerHTML =
+      '<div class="pf-formhead"><h2>' + esc(s.name) + '</h2><button class="pf-btn pf-sec pf-small" type="button" id="pf-del">Stelle entfernen</button></div>' +
+      '<div class="pf-grid">' +
+        feld('name', 'Name', s.name, { wide: true }) +
+        '<div class="pf-f"><label for="pf-f-kategorie">Art</label><select id="pf-f-kategorie" data-k="kategorie">' + Object.keys(KAT).map(function (k) { return '<option value="' + k + '"' + (k === s.kategorie ? ' selected' : '') + '>' + esc(KAT[k]) + '</option>'; }).join('') + '</select></div>' +
+        feld('stadtteil', 'Stadtteil', s.stadtteil || '', { ph: 'z. B. Babelsberg' }) +
+        feld('adresse', 'Straße und Hausnummer', s.adresse, { ph: 'z. B. Friedrich-Ebert-Straße 107' }) +
+        feld('plz', 'PLZ', s.plz) +
+        feld('ort', 'Ort', s.ort) +
+        feld('lage', 'Lagebeschreibung (optional)', s.lage || '', { ph: 'z. B. Am Ausgang des S-Bahnhofs' }) +
+        feld('telefon', 'Telefon (optional)', s.telefon || '') +
+        feld('email', 'E-Mail (optional)', s.email || '') +
+        feld('angebot', 'Angebot – ein Punkt pro Zeile', (s.angebot || []).join('\n'), { area: true, wide: true, rows: 4 }) +
+        feld('hinweis', 'Hinweis (optional)', s.hinweis || '', { area: true, wide: true, rows: 2 }) +
+      '</div>' +
+      '<h2 style="margin-top:14px">Öffnungszeiten</h2>' +
+      '<label class="pf-check"><input type="checkbox" id="pf-fest"' + (s.zeiten ? ' checked' : '') + '> Feste Öffnungszeiten angeben (sonst: „Öffnungszeiten des Geschäfts“)</label>' +
+      '<div id="pf-zeiten"></div>';
+    $('pf-form').querySelectorAll('[data-k]').forEach(function (el) { el.addEventListener('input', aendern); });
+    $('pf-del').addEventListener('click', function () {
+      if (!confirm('„' + s.name + '“ von der Karte entfernen?')) return;
+      st.data.standorte = st.data.standorte.filter(function (x) { return x.id !== id; });
+      st.sel = null; $('pf-form').innerHTML = '<p class="pf-muted">Entfernt. Links eine andere Stelle auswählen.</p>';
+      punkteNeu(); liste(); pruefen();
+    });
+    $('pf-fest').addEventListener('change', function (e) {
+      if (e.target.checked) { s.zeiten = [{ t: [1, 2, 3, 4, 5], von: '09:00', bis: '18:00' }]; }
+      else { delete s.zeiten; delete s.geschlossen; delete s.geschlossenText; }
+      zeiten(s); pruefen();
+    });
+    zeiten(s);
+    liste(); punkteNeu(); pruefen();
+    if (karte) karte.setView([s.lat, s.lon], Math.max(karte.getZoom(), 15));
+  }
+
+  function aendern(e) {
+    var s = stelle(st.sel), k = e.target.dataset.k, v = e.target.value;
+    if (k === 'angebot') s.angebot = v.split('\n');
+    else s[k] = v;
+    if (k === 'name') $('pf-form').querySelector('.pf-formhead h2').textContent = v;
+    liste(); punkteNeu(); pruefen();
+  }
+
+  function zeiten(s) {
+    var box = $('pf-zeiten');
+    if (!s.zeiten) { box.innerHTML = ''; return; }
+    box.innerHTML = s.zeiten.map(function (z, i) {
+      return '<div class="pf-regel" data-i="' + i + '"><div class="pf-tage">' + KURZ.map(function (d) {
+        return '<label><input type="checkbox" data-tag="' + d[1] + '"' + (z.t.indexOf(d[1]) >= 0 ? ' checked' : '') + '>' + d[0] + '</label>';
+      }).join('') + '</div><div class="pf-zeit"><input type="time" data-z="von" value="' + esc(z.von) + '" aria-label="von"> bis <input type="time" data-z="bis" value="' + esc(z.bis) + '" aria-label="bis"> Uhr ' +
+        '<button class="pf-btn pf-sec pf-small" type="button" data-weg="' + i + '">entfernen</button></div><div class="pf-muted pf-label">' + esc(PK.tageLabel(z.t) || 'keine Tage gewählt') + '</div></div>';
+    }).join('') +
+      '<div class="pf-row"><button class="pf-btn pf-sec pf-small" type="button" id="pf-regel">+ weitere Zeile (z. B. Samstag)</button></div>' +
+      '<div class="pf-grid" style="margin-top:10px">' +
+        '<div class="pf-f wide"><label for="pf-geschl">Geschlossen an (Datum, kommagetrennt)</label><input id="pf-geschl" value="' + esc(PK.formatGeschlossen(s.geschlossen)) + '" placeholder="z. B. 24.12., 25.12., 26.12., 31.12., 1.1."><small>Feiertage sind automatisch berücksichtigt: Ohne Haken bei „Feiertag“ ist an Feiertagen geschlossen.</small></div>' +
+        '<div class="pf-f wide"><label for="pf-geschltext">Text dazu (optional)</label><input id="pf-geschltext" value="' + esc(s.geschlossenText || '') + '" placeholder="z. B. 24.–26.12., 31.12. und 1.1. geschlossen"></div>' +
+      '</div>';
+    box.querySelectorAll('.pf-regel').forEach(function (r) {
+      var z = s.zeiten[+r.dataset.i];
+      r.querySelectorAll('[data-tag]').forEach(function (c) {
+        c.addEventListener('change', function () {
+          var tag = c.dataset.tag === 'F' ? 'F' : +c.dataset.tag;
+          z.t = z.t.filter(function (x) { return x !== tag; }); if (c.checked) z.t.push(tag);
+          r.querySelector('.pf-label').textContent = PK.tageLabel(z.t) || 'keine Tage gewählt';
+          pruefen();
+        });
+      });
+      r.querySelectorAll('[data-z]').forEach(function (inp) { inp.addEventListener('input', function () { z[inp.dataset.z] = inp.value; pruefen(); }); });
+    });
+    box.querySelectorAll('[data-weg]').forEach(function (b) { b.addEventListener('click', function () { s.zeiten.splice(+b.dataset.weg, 1); if (!s.zeiten.length) { delete s.zeiten; $('pf-fest').checked = false; } zeiten(s); pruefen(); }); });
+    var plus = $('pf-regel'); if (plus) plus.addEventListener('click', function () { s.zeiten.push({ t: [6], von: '09:00', bis: '13:00' }); zeiten(s); pruefen(); });
+    var g = $('pf-geschl'); if (g) g.addEventListener('input', function () { var r = PK.parseGeschlossen(g.value); s.geschlossen = r.tage; st.geschlFehler = r.fehler; pruefen(); });
+    var gt = $('pf-geschltext'); if (gt) gt.addEventListener('input', function () { s.geschlossenText = gt.value; pruefen(); });
+  }
+
+  // ---------- Positionskarte ----------
+  function karteAufbauen() {
+    if (!window.L) { $('pf-poshint').textContent = 'Kartenbibliothek fehlt.'; return; }
+    karte = L.map('pf-map').setView([52.395, 13.07], 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap-Mitwirkende' }).addTo(karte);
+    karte.on('click', function (e) {
+      var s = st.sel && stelle(st.sel); if (!s) { $('pf-poshint').textContent = 'Erst links eine Stelle auswählen.'; return; }
+      setzen(s, e.latlng.lat, e.latlng.lng);
+    });
+    punkteNeu();
+  }
+  function setzen(s, lat, lon) {
+    s.lat = Math.round(lat * 1e6) / 1e6; s.lon = Math.round(lon * 1e6) / 1e6;
+    $('pf-poshint').textContent = 'Position: ' + s.lat.toFixed(5) + ', ' + s.lon.toFixed(5) + ' – gesetzt.';
+    punkteNeu(); pruefen();
+  }
+  function punkteNeu() {
+    if (!karte) return;
+    Object.keys(punkte).forEach(function (k) { karte.removeLayer(punkte[k]); }); punkte = {};
+    st.data.standorte.forEach(function (s) {
+      var sel = s.id === st.sel;
+      var m = L.marker([s.lat, s.lon], {
+        draggable: sel, title: s.name, zIndexOffset: sel ? 2000 : 0,
+        icon: L.divIcon({ className: 'mk', html: '<span class="sym ' + s.kategorie + '" style="' + (sel ? 'outline:3px solid #F39200;outline-offset:2px' : 'opacity:.75') + '">' + ({ kundenzentrum: 'K', serviceagentur: 'S', verkaufsstelle: 'V' }[s.kategorie] || '?') + '</span>', iconSize: [28, 28], iconAnchor: [14, 14] })
+      }).addTo(karte);
+      if (sel) m.on('dragend', function (e) { var p = e.target.getLatLng(); setzen(s, p.lat, p.lng); });
+      else m.on('click', function () { waehlen(s.id); });
+      punkte[s.id] = m;
+    });
+  }
+
+  // Position über OpenStreetMap (Nominatim) aus der Adresse suchen - nur auf Klick.
+  function adresseSuchen() {
+    var s = st.sel && stelle(st.sel);
+    if (!s || !s.adresse) { $('pf-poshint').textContent = 'Erst eine Stelle wählen und Straße mit Hausnummer eintragen.'; return; }
+    var q = s.adresse + ', ' + (s.plz || '') + ' ' + (s.ort || 'Potsdam');
+    $('pf-poshint').textContent = 'Suche „' + q + '“ …';
+    fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=de&q=' + encodeURIComponent(q))
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.length) { $('pf-poshint').textContent = 'Adresse nicht gefunden – bitte in die Karte klicken.'; return; }
+        setzen(s, +res[0].lat, +res[0].lon);
+        if (karte) karte.setView([s.lat, s.lon], 17);
+        $('pf-poshint').textContent = 'Gefunden: ' + res[0].display_name.split(',').slice(0, 3).join(',') + ' – bitte kurz prüfen, ggf. Punkt ziehen.';
+      }, function () { $('pf-poshint').textContent = 'Suche nicht erreichbar – bitte in die Karte klicken.'; });
+  }
+
+  function neu() {
+    var c = karte ? karte.getCenter() : { lat: 52.395, lng: 13.07 };
+    var s = PK.neueStelle(c.lat, c.lng, st.data.standorte.map(function (x) { return x.id; }));
+    st.data.standorte.push(s);
+    waehlen(s.id);
+    $('pf-poshint').textContent = 'Neue Stelle liegt in der Kartenmitte – jetzt an die richtige Stelle klicken oder den Punkt ziehen.';
+    $('pf-f-name').focus(); $('pf-f-name').select();
+  }
+
+  // ---------- Prüfen und Speichern ----------
+  function daten() {
+    var d = PK.bereinigen(st.data);
+    // Neue Stellen bekommen eine ID aus dem Namen (für Direktlinks wie #name).
+    var alt = st.orig.standorte.map(function (s) { return s.id; });
+    d.standorte.forEach(function (s, i) {
+      if (alt.indexOf(s.id) < 0 && /^neue-stelle/.test(s.id) && s.name && s.name !== 'Neue Verkaufsstelle') {
+        var andere = d.standorte.filter(function (x, j) { return j !== i; }).map(function (x) { return x.id; });
+        s.id = PK.slug(s.name, andere);
+      }
+    });
+    return d;
+  }
+  function html() { return PflegeDatei.ersetzen(st.html, 'karte-data', PK.serialize(daten())); }
+
+  var letzte = [];
+  function pruefen() {
+    var d = daten(), fehler = KarteKern.pruefen(d);
+    d.standorte.forEach(function (s) { if (s.email && !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(s.email)) fehler.push(s.name + ': E-Mail-Adresse unvollständig'); });
+    if (st.geschlFehler && st.geschlFehler.length) fehler.push('Schließtage nicht erkannt: ' + st.geschlFehler.join(', ') + ' (Format: 24.12.)');
+    if (!/^\d{4}-\d\d-\d\d$/.test(d.stand || '')) fehler.push('Datenstand fehlt');
+    // Fehlermeldungen mit Namen statt IDs
+    var namen = {}; d.standorte.forEach(function (s) { namen[s.id] = s.name; });
+    fehler = fehler.map(function (f) { return f.replace(/^([a-z0-9-]+):/, function (m, id) { return namen[id] ? namen[id] + ':' : m; }); });
+    letzte = fehler;
+    $('pf-check').innerHTML = fehler.length
+      ? '<div class="pf-note bad"><b>Bitte korrigieren – so kann nicht gespeichert werden:</b><ul>' + fehler.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>'
+      : '<div class="pf-note ok">Alle ' + d.standorte.length + ' Stellen sind vollständig; Öffnungszeiten und Positionen geprüft.</div>';
+    var ch = PK.aenderungen(st.orig, d);
+    $('pf-changes').innerHTML = ch.length ? '<table><thead><tr><th>Änderung</th><th>Stelle</th></tr></thead><tbody>' + ch.map(function (c) { return '<tr><td>' + esc(c.art) + '</td><td>' + esc(c.name) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="pf-muted">Noch keine Änderungen.</p>';
+    $('pf-status').textContent = fehler.length ? fehler.length + ' Fehler – Speichern gesperrt' : (ch.length ? ch.length + ' Änderung' + (ch.length === 1 ? '' : 'en') + ' · Prüfung bestanden' : 'Keine Änderungen');
+    $('pf-status').style.color = fehler.length ? '#7A1216' : '#0B1612';
+    $('pf-save').disabled = !!fehler.length || !ch.length;
+    $('pf-preview').disabled = !!fehler.length;
+  }
+  function speichern() {
+    if (letzte.length) return;
+    var h = html();
+    PflegeDatei.speichern(h, function (wie) {
+      st.html = h; st.orig = daten(); st.data = JSON.parse(JSON.stringify(st.orig));
+      liste(); pruefen();
+      $('pf-check').insertAdjacentHTML('afterbegin', '<div class="pf-note info">' + PflegeDatei.hinweisNachSpeichern(wie) + '</div>');
+    });
+  }
 })();
 </script>
+<!-- PFLEGE:END -->
 </body>
 </html>

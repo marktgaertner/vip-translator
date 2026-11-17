@@ -36,17 +36,37 @@ oder kommerziellen Kachel-Server eintragen (eine Zeile, `L.tileLayer(...)`).
 Lokal per Doppelklick geöffnet zeigt die Karte keine Kacheln (OSM verlangt
 eine Webadresse als Herkunft) – auf dem Webspace funktioniert es.
 
-## Pflegen
+## Standorte pflegen und erweitern
 
-Alle Standorte stehen im Block `<script id="karte-data">` am Ende der Datei.
-Öffnungszeiten als Regeln: `"t"` = Wochentage (0 = Sonntag … 6 = Samstag,
-`"F"` = Feiertag), `"von"`/`"bis"` als `HH:MM`, `"geschlossen"` = Tage im
-Format `MM-TT`. Verkaufsstellen ohne `"zeiten"` zeigen „Öffnungszeiten des
-Geschäfts“. Koordinaten z. B. über openstreetmap.org (Rechtsklick → „Adresse
-anzeigen“). Danach:
+Ohne Programmierkenntnisse, direkt in der Karte: `?pflege` an die Adresse
+hängen oder unten auf **„Standorte pflegen (ViP intern)“** klicken.
+
+- **Neue Stelle:** „+ Neue Stelle“, Name, Art (Kundenzentrum /
+  Serviceagentur / Verkaufsstelle), Adresse, Stadtteil eintragen. Position
+  mit **„Position aus Adresse suchen“** (über OpenStreetMap) oder per Klick
+  in die Karte setzen; der Punkt lässt sich ziehen.
+- **Öffnungszeiten:** Haken bei „Feste Öffnungszeiten“, dann je Zeile Tage
+  anklicken (inkl. „Feiertag“) und Uhrzeiten wählen; die Beschriftung
+  („Montag – Freitag“) entsteht automatisch. Schließtage als Datum
+  („24.12., 31.12.“). Ohne Haken zeigt die Karte „Öffnungszeiten des
+  Geschäfts“.
+- **Angebot** (ein Punkt pro Zeile), Telefon, E-Mail, Hinweis – optional.
+- **Ändern / Entfernen:** Stelle links wählen; „Stelle entfernen“ oben rechts.
+- **Speichern** wie bei den Preisen: in Chrome/Edge direkt über die
+  `index.html` im Webspace-Ordner, sonst Download und auf dem Webspace
+  ersetzen. Fehler (fehlende Adresse, Position außerhalb Potsdams, ungültige
+  Uhrzeit oder Schließtage) sperren das Speichern.
+
+Neue Stellen bekommen eine ID aus dem Namen; damit funktionieren
+Direktlinks wie `index.html#kiosk-am-bassinplatz`. Bestehende IDs bleiben
+beim Umbenennen erhalten, damit verschickte Links nicht brechen.
+
+Technisch stehen die Standorte im Block `<script id="karte-data">` (Format
+siehe oben in der Datei). Tests:
 
 ```
 node karte/test/karte-test.mjs
+node preispflege/test/karte-pflege-test.mjs
 ```
 
 ## Bitte intern klären (aus der Quelle nicht eindeutig)

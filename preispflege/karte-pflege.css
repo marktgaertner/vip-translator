@@ -1,0 +1,31 @@
+/* Zusätze für die Standortpflege der Karte */
+#pf .pf-split { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 860px) { #pf .pf-split { grid-template-columns: 1fr; } }
+#pf .pf-listcard { position: sticky; top: 64px; max-height: calc(100vh - 160px); overflow-y: auto; padding: 12px; }
+#pf .pf-listhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+#pf .pf-gruppe { font-size: 13px; font-weight: 700; color: #55665F; margin: 10px 0 4px; }
+#pf .pf-item { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #CBD8D3; border-radius: 2px; padding: 7px 10px; margin-bottom: 4px; cursor: pointer; }
+#pf .pf-item:hover { background: #E5F1ED; }
+#pf .pf-item.sel { border-color: #006A4D; box-shadow: inset 4px 0 0 #006A4D; background: #E5F1ED; }
+#pf .pf-item b { display: block; font-size: 14.5px; color: #0B1612; }
+#pf .pf-item span { font-size: 13px; color: #55665F; }
+#pf .pf-formhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+#pf .pf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+@media (max-width: 700px) { #pf .pf-grid { grid-template-columns: 1fr; } }
+#pf .pf-f.wide { grid-column: 1 / -1; }
+#pf .pf-f label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }
+#pf .pf-f input, #pf .pf-f select, #pf .pf-f textarea { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; font: inherit; color: inherit; }
+#pf .pf-f textarea { resize: vertical; }
+#pf .pf-f small { display: block; color: #55665F; font-size: 12.5px; margin-top: 3px; }
+#pf .pf-check { display: flex; gap: 8px; align-items: center; font-size: 15px; margin: 4px 0 8px; }
+#pf .pf-check input { width: 18px; height: 18px; accent-color: #006A4D; }
+#pf .pf-regel { border: 1px solid #CBD8D3; padding: 8px 10px; margin-bottom: 6px; background: #FAFCFB; }
+#pf .pf-tage { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+#pf .pf-tage label { display: inline-flex; gap: 4px; align-items: center; font-size: 14.5px; }
+#pf .pf-tage input { accent-color: #006A4D; width: 16px; height: 16px; }
+#pf .pf-zeit { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; font-size: 14.5px; }
+#pf .pf-zeit input { min-height: 34px; border: 1px solid #8FA79E; border-radius: 2px; padding: 2px 6px; }
+#pf .pf-label { font-size: 13px; margin-top: 4px; }
+#pf #pf-map { height: 300px; border: 1px solid #CBD8D3; }
+#pf .pf-poszeile { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+#pf .pf-poszeile p { margin: 0; }

@@ -1,7 +1,8 @@
-# Preispflege – direkt im Tarifberater und im Jobticket-Rechner
+# Pflege direkt in den Tools – Preise und Standorte
 
-Die Preise pflegt das Team **in den Tools selbst**, ohne Code und ohne
-zusätzliche Seite.
+Das Team pflegt **in den Tools selbst**, ohne Code und ohne zusätzliche
+Seite: die Preise im Tarifberater und im Jobticket-Rechner, die Standorte in
+der Karte (Anleitung dafür: `karte/README.md`). Aufruf jeweils mit `?pflege`.
 
 ## So geht's
 
@@ -40,8 +41,11 @@ nicht.
 
 ## Für Entwickler
 
-Quelle: `pflege-kern.js` (Prüfen, Schreiben, Jahreswechsel – ohne DOM),
-`pflege-ui.js` (Oberfläche), `pflege.css`. Eingebaut wird mit
+Quelle: `pflege-datei.js` (Datei lesen und speichern, gemeinsam),
+`pflege-kern.js` (Preise prüfen, schreiben, Jahreswechsel – ohne DOM),
+`pflege-ui.js` (Preis-Oberfläche), `karte-pflege.js` (Standortpflege mit
+Kern `KartePflegeKern`), `pflege.css`, `karte-pflege.css`. Welche Teile in
+welches Tool gehören, steht in `einbauen.mjs`. Eingebaut wird mit
 
 ```
 node preispflege/einbauen.mjs
@@ -53,10 +57,11 @@ unveränderte Seite (nur mit `?pflege`), damit auch eine lokal geöffnete
 Datei gespeichert werden kann; online liest die Pflege die Datei direkt vom
 Server. Die Tools starten deshalb erst bei `DOMContentLoaded`.
 
-Test (prüft auch, dass die eingebaute Fassung aktuell ist):
+Tests (prüfen auch, dass die eingebaute Fassung aktuell ist):
 
 ```
 node preispflege/test/pflege-test.mjs
+node preispflege/test/karte-pflege-test.mjs
 ```
 
 Kommt ein neues Preisfeld hinzu, erscheint es automatisch; für eine

@@ -20,7 +20,7 @@ for (const [ordner, tool, feld] of [['tarifberater', 'tarif', ['potsdam', 'ab', 
   console.log('\n' + ordner);
   const html = readFileSync(join(root, ordner, 'index.html'), 'utf8');
   const f = P.findData(html);
-  check('Preispflege ist eingebaut und aktuell (sonst: node preispflege/einbauen.mjs)', html.includes('<script id="pflege-quelle">') && html.includes('<!-- PFLEGE:START') && einbauen(html) === html);
+  check('Preispflege ist eingebaut und aktuell (sonst: node preispflege/einbauen.mjs)', html.includes('<script id="pflege-quelle">') && html.includes('<!-- PFLEGE:START') && einbauen(html, ordner + '/index.html') === html);
   check('Fußzeile verlinkt die Preispflege', html.includes('href="?pflege"'));
   check('Tool erkannt', f && f.tool === tool, f && f.tool);
 

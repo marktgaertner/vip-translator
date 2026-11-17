@@ -537,7 +537,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <!-- PFLEGE:START - eingebaut aus preispflege/ (dort ändern, dann node preispflege/einbauen.mjs) -->
-<script id="pflege-kern">
+<script id="pflege-code">
+// Stil erst nach dem Sichern der Seite einfügen, sonst wanderte er in die gespeicherte Datei.
+if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMContentLoaded', function () {
+  var pflegeStil = document.createElement('style');
+  pflegeStil.textContent = "/* Preispflege-Ansicht (nur mit ?pflege). Alles unter #pf, damit die\n   Stile der Seite und des Editors sich nicht in die Quere kommen. */\n#pf { position: fixed; inset: 0; z-index: 99999; overflow-y: auto; background: #F2F5F4; color: #16241F;\n  font-family: \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif; font-size: 16px; line-height: 1.5; text-align: left; direction: ltr; }\n#pf * { box-sizing: border-box; letter-spacing: normal; }\n#pf button, #pf input { font: inherit; color: inherit; }\n#pf button:focus-visible, #pf input:focus-visible, #pf a:focus-visible { outline: 3px solid #F39200; outline-offset: 1px; }\n#pf .pf-top { background: #09503D; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 3; }\n#pf .pf-top-in { max-width: 1100px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }\n#pf .pf-top b { font-size: 18px; }\n#pf .pf-top span { opacity: .85; font-size: 14.5px; }\n#pf .pf-top a { margin-left: auto; color: #fff; border: 1px solid rgba(255,255,255,.7); padding: 6px 12px; text-decoration: none; font-weight: 600; font-size: 14px; }\n#pf .pf-main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }\n#pf h2 { font-size: 19px; margin: 0 0 4px; color: #0B1612; }\n#pf p { margin: 0 0 8px; }\n#pf .pf-muted { color: #55665F; font-size: 14.5px; }\n#pf .pf-card { background: #fff; border: 1px solid #CBD8D3; padding: 16px; margin-bottom: 14px; }\n#pf .pf-steps { margin: 0 0 14px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; counter-reset: s; }\n@media (max-width: 760px) { #pf .pf-steps { grid-template-columns: 1fr; } }\n#pf .pf-steps li { counter-increment: s; background: #fff; border: 1px solid #CBD8D3; padding: 10px 12px 10px 46px; position: relative; font-size: 15px; }\n#pf .pf-steps li::before { content: counter(s); position: absolute; left: 10px; top: 10px; width: 26px; height: 26px; background: #006A4D; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }\n#pf .pf-btn { border: 1px solid #006A4D; border-radius: 2px; padding: 10px 16px; font-weight: 600; cursor: pointer; background: #006A4D; color: #fff; }\n#pf .pf-btn:hover { background: #09503D; }\n#pf .pf-btn.pf-sec { background: #fff; color: #006A4D; }\n#pf .pf-btn.pf-sec:hover { background: #E5F1ED; }\n#pf .pf-btn.pf-small { padding: 3px 8px; font-size: 13px; }\n#pf .pf-btn:disabled { opacity: .45; cursor: not-allowed; }\n#pf .pf-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }\n#pf .pf-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }\n#pf .pf-meta label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }\n#pf .pf-meta input { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; }\n#pf table { width: 100%; border-collapse: collapse; font-size: 15px; }\n#pf caption { text-align: left; font-weight: 700; font-size: 16px; color: #0B1612; padding: 14px 0 6px; }\n#pf th { text-align: left; font-size: 13px; font-weight: 600; color: #55665F; padding: 6px 8px; border-bottom: 2px solid #0B1612; }\n#pf th.n, #pf td.n { text-align: right; }\n#pf td { padding: 4px 8px; border-bottom: 1px solid #CBD8D3; vertical-align: middle; }\n#pf td.pf-name { width: 46%; }\n#pf td.pf-name small { display: block; color: #55665F; font-size: 12.5px; }\n#pf td input { width: 110px; min-height: 36px; text-align: right; border: 1px solid #8FA79E; border-radius: 2px; padding: 4px 8px; background: #fff; font-variant-numeric: tabular-nums; }\n#pf td input.pf-text { width: 100%; text-align: left; }\n#pf tr.pf-changed td { background: #E5F1ED; }\n#pf tr.pf-changed td.pf-name::before { content: \"geändert · \"; color: #006A4D; font-size: 12px; font-weight: 700; }\n#pf td.pf-diff { color: #55665F; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }\n#pf input.pf-bad { border-color: #C41E25; background: #FCE8E8; }\n#pf input.pf-warn { border-color: #F39200; background: #FFF4E0; }\n#pf .pf-msg { font-size: 12.5px; display: block; }\n#pf .pf-msg.bad { color: #7A1216; } #pf .pf-msg.warn { color: #5C3A00; }\n@media (max-width: 700px) {\n  #pf table, #pf tbody, #pf tr, #pf td { display: block; width: 100%; }\n  #pf thead { display: none; }\n  #pf tr { border-bottom: 1px solid #CBD8D3; padding: 6px 0; }\n  #pf td { border: 0; padding: 3px 0; }\n  #pf td[data-h]::before { content: attr(data-h) \": \"; color: #55665F; font-size: 13px; display: inline-block; min-width: 60px; }\n}\n#pf .pf-note { padding: 10px 14px; font-size: 15px; border-left: 4px solid; margin: 8px 0; }\n#pf .pf-note.ok { background: #E5F3E8; color: #1D4F28; border-color: #006A4D; }\n#pf .pf-note.warn { background: #FFF4E0; color: #5C3A00; border-color: #F39200; }\n#pf .pf-note.bad { background: #FCE8E8; color: #7A1216; border-color: #C41E25; }\n#pf .pf-note.info { background: #EAF2FA; color: #0F3D66; border-color: #1467A8; }\n#pf .pf-note ul { margin: 4px 0 0; padding-left: 18px; }\n#pf details summary { cursor: pointer; font-weight: 600; color: #006A4D; margin: 8px 0; }\n#pf code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: #F2F5F4; padding: 1px 4px; }\n#pf .pf-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 2px solid #0B1612; z-index: 4; }\n#pf .pf-bar-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }\n#pf .pf-status { margin-right: auto; font-weight: 600; }";
+  document.head.appendChild(pflegeStil);
+});
+
+/* ---- pflege-kern.js ---- */
 var PreisPflege = (function () {
   'use strict';
 
@@ -765,14 +773,66 @@ var PreisPflege = (function () {
     yearRollover: yearRollover, labelFor: labelFor, sectionFor: sectionFor, derive: derive, DERIVED: DERIVED, checkValue: checkValue,
     changes: changes, checkAll: checkAll, isPair: isPair, r2: r2 };
 })();
-</script>
-<script id="pflege-ui">
-// Stil erst nach dem Sichern der Seite einfügen, sonst wanderte er in die gespeicherte Datei.
-if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMContentLoaded', function () {
-  var pflegeStil = document.createElement('style');
-  pflegeStil.textContent = "/* Preispflege-Ansicht (nur mit ?pflege). Alles unter #pf, damit die\n   Stile der Seite und des Editors sich nicht in die Quere kommen. */\n#pf { position: fixed; inset: 0; z-index: 99999; overflow-y: auto; background: #F2F5F4; color: #16241F;\n  font-family: \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif; font-size: 16px; line-height: 1.5; text-align: left; direction: ltr; }\n#pf * { box-sizing: border-box; letter-spacing: normal; }\n#pf button, #pf input { font: inherit; color: inherit; }\n#pf button:focus-visible, #pf input:focus-visible, #pf a:focus-visible { outline: 3px solid #F39200; outline-offset: 1px; }\n#pf .pf-top { background: #09503D; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 3; }\n#pf .pf-top-in { max-width: 1100px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }\n#pf .pf-top b { font-size: 18px; }\n#pf .pf-top span { opacity: .85; font-size: 14.5px; }\n#pf .pf-top a { margin-left: auto; color: #fff; border: 1px solid rgba(255,255,255,.7); padding: 6px 12px; text-decoration: none; font-weight: 600; font-size: 14px; }\n#pf .pf-main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }\n#pf h2 { font-size: 19px; margin: 0 0 4px; color: #0B1612; }\n#pf p { margin: 0 0 8px; }\n#pf .pf-muted { color: #55665F; font-size: 14.5px; }\n#pf .pf-card { background: #fff; border: 1px solid #CBD8D3; padding: 16px; margin-bottom: 14px; }\n#pf .pf-steps { margin: 0 0 14px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; counter-reset: s; }\n@media (max-width: 760px) { #pf .pf-steps { grid-template-columns: 1fr; } }\n#pf .pf-steps li { counter-increment: s; background: #fff; border: 1px solid #CBD8D3; padding: 10px 12px 10px 46px; position: relative; font-size: 15px; }\n#pf .pf-steps li::before { content: counter(s); position: absolute; left: 10px; top: 10px; width: 26px; height: 26px; background: #006A4D; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }\n#pf .pf-btn { border: 1px solid #006A4D; border-radius: 2px; padding: 10px 16px; font-weight: 600; cursor: pointer; background: #006A4D; color: #fff; }\n#pf .pf-btn:hover { background: #09503D; }\n#pf .pf-btn.pf-sec { background: #fff; color: #006A4D; }\n#pf .pf-btn.pf-sec:hover { background: #E5F1ED; }\n#pf .pf-btn.pf-small { padding: 3px 8px; font-size: 13px; }\n#pf .pf-btn:disabled { opacity: .45; cursor: not-allowed; }\n#pf .pf-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }\n#pf .pf-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }\n#pf .pf-meta label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }\n#pf .pf-meta input { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; }\n#pf table { width: 100%; border-collapse: collapse; font-size: 15px; }\n#pf caption { text-align: left; font-weight: 700; font-size: 16px; color: #0B1612; padding: 14px 0 6px; }\n#pf th { text-align: left; font-size: 13px; font-weight: 600; color: #55665F; padding: 6px 8px; border-bottom: 2px solid #0B1612; }\n#pf th.n, #pf td.n { text-align: right; }\n#pf td { padding: 4px 8px; border-bottom: 1px solid #CBD8D3; vertical-align: middle; }\n#pf td.pf-name { width: 46%; }\n#pf td.pf-name small { display: block; color: #55665F; font-size: 12.5px; }\n#pf td input { width: 110px; min-height: 36px; text-align: right; border: 1px solid #8FA79E; border-radius: 2px; padding: 4px 8px; background: #fff; font-variant-numeric: tabular-nums; }\n#pf td input.pf-text { width: 100%; text-align: left; }\n#pf tr.pf-changed td { background: #E5F1ED; }\n#pf tr.pf-changed td.pf-name::before { content: \"geändert · \"; color: #006A4D; font-size: 12px; font-weight: 700; }\n#pf td.pf-diff { color: #55665F; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }\n#pf input.pf-bad { border-color: #C41E25; background: #FCE8E8; }\n#pf input.pf-warn { border-color: #F39200; background: #FFF4E0; }\n#pf .pf-msg { font-size: 12.5px; display: block; }\n#pf .pf-msg.bad { color: #7A1216; } #pf .pf-msg.warn { color: #5C3A00; }\n@media (max-width: 700px) {\n  #pf table, #pf tbody, #pf tr, #pf td { display: block; width: 100%; }\n  #pf thead { display: none; }\n  #pf tr { border-bottom: 1px solid #CBD8D3; padding: 6px 0; }\n  #pf td { border: 0; padding: 3px 0; }\n  #pf td[data-h]::before { content: attr(data-h) \": \"; color: #55665F; font-size: 13px; display: inline-block; min-width: 60px; }\n}\n#pf .pf-note { padding: 10px 14px; font-size: 15px; border-left: 4px solid; margin: 8px 0; }\n#pf .pf-note.ok { background: #E5F3E8; color: #1D4F28; border-color: #006A4D; }\n#pf .pf-note.warn { background: #FFF4E0; color: #5C3A00; border-color: #F39200; }\n#pf .pf-note.bad { background: #FCE8E8; color: #7A1216; border-color: #C41E25; }\n#pf .pf-note.info { background: #EAF2FA; color: #0F3D66; border-color: #1467A8; }\n#pf .pf-note ul { margin: 4px 0 0; padding-left: 18px; }\n#pf details summary { cursor: pointer; font-weight: 600; color: #006A4D; margin: 8px 0; }\n#pf code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: #F2F5F4; padding: 1px 4px; }\n#pf .pf-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 2px solid #0B1612; z-index: 4; }\n#pf .pf-bar-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }\n#pf .pf-status { margin-right: auto; font-weight: 600; }";
-  document.head.appendChild(pflegeStil);
-});
+
+/* ---- pflege-datei.js ---- */
+/* Gemeinsam für alle Pflege-Ansichten (?pflege): die eigene Datei lesen,
+   einen JSON-Datenblock ersetzen, speichern. */
+var PflegeDatei = (function () {
+  'use strict';
+
+  // Quelle der Seite: online die Datei selbst vom Server (genau der Stand,
+  // der veröffentlicht ist); lokal geöffnet die beim Laden gesicherte Fassung.
+  function quelle(passt) {
+    var lokal = function () { return window.PflegeQuelle || null; };
+    if (!window.fetch || location.protocol === 'file:') return Promise.resolve(lokal());
+    var url = location.href.split('#')[0].split('?')[0];
+    return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { return passt(t) ? t : lokal(); }, lokal);
+  }
+
+  function blockRegex(id) { return new RegExp('(<script id="' + id + '" type="application/json">)([\\s\\S]*?)(<\/script>)'); }
+  function lesen(html, id) { var m = html.match(blockRegex(id)); return m ? JSON.parse(m[2]) : null; }
+  function ersetzen(html, id, json) {
+    var re = blockRegex(id);
+    if (!re.test(html)) throw new Error('Datenblock ' + id + ' nicht gefunden');
+    return html.replace(re, function (m, a, b, c) { return a + '\n' + json.replace(/<\//g, '<\\/') + '\n' + c; });
+  }
+
+  // Speichern: in Chrome/Edge direkt in eine Datei nach Wahl (etwa die
+  // index.html im Webspace-Ordner), sonst als Download.
+  // fertig(wie) mit wie = 'datei' | 'download'.
+  function speichern(html, fertig) {
+    if (window.showSaveFilePicker) {
+      window.showSaveFilePicker({ suggestedName: 'index.html', types: [{ description: 'Webseite', accept: { 'text/html': ['.html'] } }] })
+        .then(function (h) { return h.createWritable().then(function (w) { return w.write(html).then(function () { return w.close(); }); }); })
+        .then(function () { fertig('datei'); }, function (e) { if (e && e.name !== 'AbortError') herunterladen(html, fertig); });
+      return;
+    }
+    herunterladen(html, fertig);
+  }
+  function herunterladen(html, fertig) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+    a.download = 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    fertig('download');
+  }
+  function vorschau(html) {
+    var w = window.open(URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })), '_blank');
+    if (!w) alert('Der Browser hat das neue Fenster blockiert – bitte Pop-ups erlauben.');
+  }
+  function hinweisNachSpeichern(wie) {
+    return wie === 'datei'
+      ? '<b>Gespeichert.</b> Liegt die Datei im Webspace-Ordner, ist der neue Stand online – einmal die Seite neu laden und prüfen.'
+      : '<b>Heruntergeladen.</b> Die neue <code>index.html</code> liegt im Download-Ordner. Auf dem Webspace die alte Datei sichern (z. B. <code>index-alt.html</code>) und durch die neue ersetzen.';
+  }
+  var kannDirekt = !!window.showSaveFilePicker;
+
+  return { quelle: quelle, lesen: lesen, ersetzen: ersetzen, speichern: speichern, vorschau: vorschau, hinweisNachSpeichern: hinweisNachSpeichern, kannDirekt: kannDirekt };
+})();
+
+/* ---- pflege-ui.js ---- */
 /* Preispflege direkt im Tool: Seite mit ?pflege öffnen (oder unten auf
    "Preise pflegen" klicken). Der Editor liest die eigene Datei, prüft jede
    Eingabe mit der Rechenlogik dieser Seite und speichert eine neue Fassung. */
@@ -789,16 +849,6 @@ if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMCon
   function datum(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso; }
   function heute() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
-  // Quelle der Seite: auf dem Webspace die Datei selbst (genau der Stand, der
-  // online ist); lokal geöffnet die beim Laden gesicherte Fassung.
-  function quelle() {
-    var url = location.href.split('#')[0].split('?')[0];
-    var lokal = function () { return window.PflegeQuelle || null; };
-    if (!window.fetch || location.protocol === 'file:') return Promise.resolve(lokal());
-    return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function (t) { return P.findData(t) ? t : lokal(); }, lokal);
-  }
-
   var st = null, root = null, $ = function (id) { return document.getElementById(id); };
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -809,7 +859,7 @@ if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMCon
     root.innerHTML = '<div class="pf-top"><div class="pf-top-in"><b>Preispflege</b><span id="pf-was">wird geladen …</span><a href="' + esc(location.pathname) + '">Fertig – zur Seite</a></div></div><div class="pf-main" id="pf-main"></div>';
     document.body.appendChild(root);
     document.documentElement.style.overflow = 'hidden';
-    quelle().then(function (html) {
+    PflegeDatei.quelle(function (t) { return !!P.findData(t); }).then(function (html) {
       var found = html && P.findData(html);
       if (!found) { $('pf-main').innerHTML = '<div class="pf-note bad">Die Preisdaten dieser Seite ließen sich nicht lesen.</div>'; return; }
       st = { html: html, tool: found.tool, name: found.name, orig: found.data, data: JSON.parse(JSON.stringify(found.data)) };
@@ -819,7 +869,7 @@ if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMCon
 
   function aufbauen() {
     $('pf-was').textContent = st.name + ' · Preise ' + st.data.jahre[0].key + ' und ' + st.data.jahre[1].key;
-    var kannSpeichern = !!window.showSaveFilePicker;
+    var kannSpeichern = PflegeDatei.kannDirekt;
     $('pf-main').innerHTML =
       '<ol class="pf-steps">' +
         '<li><b>Preise ändern</b><br>geänderte Zeilen werden grün, Fehler rot</li>' +
@@ -840,10 +890,7 @@ if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMCon
       if (!confirm('Alle Änderungen verwerfen?')) return;
       st.data = JSON.parse(JSON.stringify(st.orig)); alles();
     });
-    $('pf-preview').addEventListener('click', function () {
-      var w = window.open(URL.createObjectURL(new Blob([neu()], { type: 'text/html;charset=utf-8' })), '_blank');
-      if (!w) alert('Der Browser hat das neue Fenster blockiert – bitte Pop-ups erlauben.');
-    });
+    $('pf-preview').addEventListener('click', function () { PflegeDatei.vorschau(neu()); });
     $('pf-save').addEventListener('click', speichern);
     alles();
   }
@@ -960,33 +1007,14 @@ if (/[?&]pflege(=|&|$)/.test(location.search)) document.addEventListener('DOMCon
 
   function neu() { return P.replaceData(st.html, st.tool, st.data); }
 
-  // Speichern: wo der Browser es kann (Chrome, Edge), direkt in eine Datei
-  // nach Wahl - etwa die index.html im Webspace-Ordner. Sonst als Download.
   function speichern() {
     if (!letzte || letzte.errors.length) return;
     if (letzte.warnings.length && !confirm('Es gibt ' + letzte.warnings.length + ' Hinweis(e) aus der Prüfung. Trotzdem speichern?')) return;
     var html = neu();
-    var fertig = function (wie) {
+    PflegeDatei.speichern(html, function (wie) {
       st.orig = JSON.parse(JSON.stringify(st.data)); st.html = html; auffrischen();
-      $('pf-check').insertAdjacentHTML('afterbegin', '<div class="pf-note info"><b>' + (wie === 'datei' ? 'Gespeichert.' : 'Heruntergeladen.') + '</b> ' +
-        (wie === 'datei' ? 'Liegt die Datei im Webspace-Ordner, ist der neue Stand online – einmal die Seite neu laden und eine Empfehlung durchklicken.'
-          : 'Die neue <code>index.html</code> liegt im Download-Ordner. Auf dem Webspace die alte Datei sichern (z. B. <code>index-alt.html</code>) und durch die neue ersetzen.') + '</div>');
-    };
-    if (window.showSaveFilePicker) {
-      window.showSaveFilePicker({ suggestedName: 'index.html', types: [{ description: 'Webseite', accept: { 'text/html': ['.html'] } }] })
-        .then(function (h) { return h.createWritable().then(function (w) { return w.write(html).then(function () { return w.close(); }); }); })
-        .then(function () { fertig('datei'); }, function (e) { if (e && e.name !== 'AbortError') herunterladen(html, fertig); });
-      return;
-    }
-    herunterladen(html, fertig);
-  }
-  function herunterladen(html, fertig) {
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
-    a.download = 'index.html';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-    fertig('download');
+      $('pf-check').insertAdjacentHTML('afterbegin', '<div class="pf-note info">' + PflegeDatei.hinweisNachSpeichern(wie) + '</div>');
+    });
   }
 })();
 </script>
