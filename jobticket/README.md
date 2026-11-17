@@ -45,12 +45,14 @@ im Rechner).
 | `index.html` | Vollansicht |
 | `index.html?embed=1` | ohne Kopfleiste, für iframes/WebViews |
 | `index.html?jahr=2027` | Preise 2027 vorab |
+| `index.html?pflege` | Preispflege fürs Team |
 | `index.html#n=35&z=30&s=pauschal&pk=80&pa=6` | fertige Rechnung als Link: `n` Beschäftigte, `z` Zuschuss (`min`, `voll`, `30` oder Betrag), `s=pauschal`, `pk`/`pa` Stellplatzkosten/-anzahl – gut für Vertriebs-Mails |
 
 ## Pflege und Test
 
-Preise und Prozentsätze ändert das Team mit `preispflege/index.html` (Datei
-hineinziehen, Werte ändern, neue Datei herunterladen) – ohne Code. Alle Texte
+Preise und Prozentsätze ändert das Team direkt in der Seite: `?pflege` an die
+Adresse hängen oder unten auf „Preise pflegen (ViP intern)“ klicken (Anleitung:
+`preispflege/README.md`) – ohne Code. Alle Texte
 mit Prozentsätzen („Mindestens 25 % …“, „Mit 25 % Pauschalsteuer“) folgen den
 Daten. Technisch stehen die Werte im Block `<script id="jobticket-data">`.
 Prüfung der Rechenlogik:

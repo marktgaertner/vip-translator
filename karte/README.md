@@ -8,6 +8,7 @@ Stand 17.11.2026.
 
 ## Was die Seite kann
 
+- Kundenzentren sind mit rotem Rahmen hervorgehoben (Karte, Liste, Legende).
 - Liste mit Filter (Kundenzentren / Serviceagentur / Verkaufsstellen), Suche
   nach Name, Straße oder Stadtteil und „Nur jetzt geöffnete“.
 - **Jetzt geöffnet / schließt bald / öffnet morgen 7:00** – berechnet in

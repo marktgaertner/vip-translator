@@ -1,51 +1,64 @@
-# Preispflege – Preise ändern ohne Programmierkenntnisse
+# Preispflege – direkt im Tarifberater und im Jobticket-Rechner
 
-`preispflege/index.html` ist eine interne Seite für das Team. Sie ändert die
-Preisdaten im **Tarifberater** und im **Jobticket-Rechner**. Es wird nichts
-hochgeladen – alles läuft im Browser, auch offline.
+Die Preise pflegt das Team **in den Tools selbst**, ohne Code und ohne
+zusätzliche Seite.
 
 ## So geht's
 
-1. `preispflege/index.html` im Browser öffnen (Doppelklick genügt).
-2. Die aktuelle `index.html` des Tools hineinziehen – also
-   `tarifberater/index.html` oder `jobticket/index.html`, am besten die
-   Datei, die gerade auf dem Webspace liegt.
-3. Preise eintragen. Linke Spalte = laufendes Jahr, rechte Spalte = Folgejahr.
-   Geänderte Zeilen werden grün markiert; „Datenstand“ auf heute setzen.
-4. Unten zeigt die Prüfung, ob alles stimmt:
-   - **Rot** = Fehler (leeres Feld, Betrag ≤ 0 …) – Download gesperrt.
-   - **Orange** = Hinweis (mehr als 10 % teurer, Folgejahr günstiger) – bitte
-     prüfen, Download möglich.
-   - Die Stichprobe zeigt typische Empfehlungen mit den neuen Preisen.
-5. „Vorschau öffnen“ zeigt die geänderte Seite, „Neue Datei herunterladen“
-   speichert sie.
-6. Auf dem Webspace die alte Datei sichern (z. B. `index-alt.html`) und durch
-   die neue ersetzen. Einmal im Browser öffnen und eine Empfehlung durchklicken.
+1. Das Tool öffnen und an die Adresse `?pflege` anhängen – oder ganz unten
+   auf **„Preise pflegen (ViP intern)“** klicken. Beispiel:
+   `https://…/tarifberater/?pflege`. Tipp: als Lesezeichen speichern.
+2. Über der Seite erscheint die Preispflege mit allen aktuellen Preisen.
+   Links das laufende Jahr, rechts das Folgejahr. Geänderte Zeilen werden
+   grün, Fehler rot (Speichern gesperrt), Auffälliges orange (z. B. mehr als
+   10 % teurer).
+3. **Speichern**:
+   - In **Chrome/Edge** öffnet sich ein Speichern-Dialog: die `index.html`
+     im Webspace-Ordner auswählen (z. B. als Netzlaufwerk verbunden) – dann
+     ist der neue Stand sofort online.
+   - In anderen Browsern wird die neue `index.html` heruntergeladen und auf
+     dem Webspace ersetzt (alte Datei vorher sichern).
+4. Seite neu laden und eine Empfehlung durchklicken.
 
-## Jahreswechsel
+Vor dem Speichern rechnet die Preispflege mit der Rechenlogik der Seite alle
+Antwortkombinationen durch (Tarifberater: 2.160) und zeigt eine Stichprobe
+typischer Empfehlungen sowie eine Liste aller Änderungen. „Vorschau“ öffnet
+die geänderte Seite in einem neuen Tab.
 
-Wenn der VBB die Preise des übernächsten Jahres veröffentlicht (meist im
-September), „Jahreswechsel vorbereiten“ klicken: Das Folgejahr wird zum
-laufenden Jahr (mit seinen Preisen), ein neues Folgejahr wird angelegt.
-Danach die neuen Preise rechts eintragen. Bis dahin muss nichts getan werden –
-die Seiten schalten am 1. Januar selbst auf die Preise der rechten Spalte um.
+**Jahreswechsel:** Wenn der VBB die Preise des übernächsten Jahres
+veröffentlicht (meist im September), „Jahreswechsel vorbereiten“ klicken und
+die neuen Preise rechts eintragen. Sonst ist nichts zu tun – die Seiten
+schalten am 1. Januar selbst um.
 
-## Abgeleitete Preise
+**Abgeleitete Preise:** Deutschlandticket Job (70 %), Zuschuss Ausbildung
+und Semesterticket (je 60 %) lassen sich per „berechnen“ aus dem
+Deutschlandticket setzen.
 
-Deutschlandticket Job (70 %), Deutschlandticket Zuschuss Ausbildung (60 %) und
-Deutschlandsemesterticket (60 %) hängen am Deutschlandticket. Der Knopf
-„berechnen“ setzt sie aus dem Deutschlandticket-Preis.
+Die Preispflege ändert nur die Datei, die gespeichert wird. Wer `?pflege`
+aufruft, ohne zu speichern, verändert nichts – auch Besucher der Website
+nicht.
 
 ## Für Entwickler
 
-Der Kern (Erkennen, Prüfen, Schreiben, Jahreswechsel) steht im Block
-`<script id="pflege-kern">` und wird mit den echten Dateien beider Tools getestet:
+Quelle: `pflege-kern.js` (Prüfen, Schreiben, Jahreswechsel – ohne DOM),
+`pflege-ui.js` (Oberfläche), `pflege.css`. Eingebaut wird mit
+
+```
+node preispflege/einbauen.mjs
+```
+
+zwischen `<!-- PFLEGE:START -->` und `<!-- PFLEGE:END -->` sowie als
+`<script id="pflege-quelle">` im Kopf. Letzteres sichert beim Laden die
+unveränderte Seite (nur mit `?pflege`), damit auch eine lokal geöffnete
+Datei gespeichert werden kann; online liest die Pflege die Datei direkt vom
+Server. Die Tools starten deshalb erst bei `DOMContentLoaded`.
+
+Test (prüft auch, dass die eingebaute Fassung aktuell ist):
 
 ```
 node preispflege/test/pflege-test.mjs
 ```
 
-Die Prüfung lädt die Rechenlogik aus der geladenen Datei selbst – geprüft wird
-also genau der Code, der später auf der Webseite läuft. Kommt ein neues
-Preisfeld hinzu, erscheint es automatisch im Editor; für eine verständliche
-Beschriftung einen Eintrag in `NAMES` ergänzen (der Test meldet fehlende).
+Kommt ein neues Preisfeld hinzu, erscheint es automatisch; für eine
+verständliche Beschriftung einen Eintrag in `NAMES` (pflege-kern.js)
+ergänzen – der Test meldet fehlende.

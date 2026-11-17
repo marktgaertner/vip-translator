@@ -734,7 +734,8 @@ h1 { font-size: 22px; line-height: 1.2; margin: 0 0 4px; color: var(--ink-strong
 
 /* Kategorie-Symbole: Quadrate statt Stecknadeln */
 .sym { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; border: 2px solid var(--accent-dark); }
-.sym.kundenzentrum { background: var(--c-kz); color: #fff; width: 26px; height: 26px; font-size: 14px; }
+.sym.kundenzentrum { background: var(--c-kz); color: #fff; width: 28px; height: 28px; font-size: 14px; border: 3px solid #D5232A; }
+.entry .sym.kundenzentrum { margin-inline-start: -1px; }
 .sym.serviceagentur { background: var(--c-sa); border-color: var(--c-sa); color: #fff; }
 .sym.verkaufsstelle { background: var(--c-vk); color: var(--accent-dark); width: 20px; height: 20px; font-size: 11px; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); margin-top: 10px; }
@@ -1437,7 +1438,7 @@ var KarteKern = (function () {
     }).addTo(map);
     var bounds = [];
     D.standorte.forEach(function (s) {
-      var size = s.kategorie === 'kundenzentrum' ? 30 : s.kategorie === 'serviceagentur' ? 28 : 24;
+      var size = s.kategorie === 'kundenzentrum' ? 32 : s.kategorie === 'serviceagentur' ? 28 : 24;
       var m = L.marker([s.lat, s.lon], {
         icon: L.divIcon({ className: 'mk', html: sym(s.kategorie), iconSize: [size, size], iconAnchor: [size / 2, size / 2] }),
         title: s.name, keyboard: true, zIndexOffset: s.kategorie === 'verkaufsstelle' ? 0 : 1000

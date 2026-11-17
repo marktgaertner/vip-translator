@@ -1,0 +1,65 @@
+/* Preispflege-Ansicht (nur mit ?pflege). Alles unter #pf, damit die
+   Stile der Seite und des Editors sich nicht in die Quere kommen. */
+#pf { position: fixed; inset: 0; z-index: 99999; overflow-y: auto; background: #F2F5F4; color: #16241F;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; font-size: 16px; line-height: 1.5; text-align: left; direction: ltr; }
+#pf * { box-sizing: border-box; letter-spacing: normal; }
+#pf button, #pf input { font: inherit; color: inherit; }
+#pf button:focus-visible, #pf input:focus-visible, #pf a:focus-visible { outline: 3px solid #F39200; outline-offset: 1px; }
+#pf .pf-top { background: #09503D; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 3; }
+#pf .pf-top-in { max-width: 1100px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+#pf .pf-top b { font-size: 18px; }
+#pf .pf-top span { opacity: .85; font-size: 14.5px; }
+#pf .pf-top a { margin-left: auto; color: #fff; border: 1px solid rgba(255,255,255,.7); padding: 6px 12px; text-decoration: none; font-weight: 600; font-size: 14px; }
+#pf .pf-main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }
+#pf h2 { font-size: 19px; margin: 0 0 4px; color: #0B1612; }
+#pf p { margin: 0 0 8px; }
+#pf .pf-muted { color: #55665F; font-size: 14.5px; }
+#pf .pf-card { background: #fff; border: 1px solid #CBD8D3; padding: 16px; margin-bottom: 14px; }
+#pf .pf-steps { margin: 0 0 14px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; counter-reset: s; }
+@media (max-width: 760px) { #pf .pf-steps { grid-template-columns: 1fr; } }
+#pf .pf-steps li { counter-increment: s; background: #fff; border: 1px solid #CBD8D3; padding: 10px 12px 10px 46px; position: relative; font-size: 15px; }
+#pf .pf-steps li::before { content: counter(s); position: absolute; left: 10px; top: 10px; width: 26px; height: 26px; background: #006A4D; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+#pf .pf-btn { border: 1px solid #006A4D; border-radius: 2px; padding: 10px 16px; font-weight: 600; cursor: pointer; background: #006A4D; color: #fff; }
+#pf .pf-btn:hover { background: #09503D; }
+#pf .pf-btn.pf-sec { background: #fff; color: #006A4D; }
+#pf .pf-btn.pf-sec:hover { background: #E5F1ED; }
+#pf .pf-btn.pf-small { padding: 3px 8px; font-size: 13px; }
+#pf .pf-btn:disabled { opacity: .45; cursor: not-allowed; }
+#pf .pf-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+#pf .pf-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }
+#pf .pf-meta label { display: block; font-size: 13px; color: #55665F; margin-bottom: 3px; }
+#pf .pf-meta input { width: 100%; min-height: 40px; border: 1px solid #8FA79E; border-radius: 2px; padding: 6px 10px; background: #fff; }
+#pf table { width: 100%; border-collapse: collapse; font-size: 15px; }
+#pf caption { text-align: left; font-weight: 700; font-size: 16px; color: #0B1612; padding: 14px 0 6px; }
+#pf th { text-align: left; font-size: 13px; font-weight: 600; color: #55665F; padding: 6px 8px; border-bottom: 2px solid #0B1612; }
+#pf th.n, #pf td.n { text-align: right; }
+#pf td { padding: 4px 8px; border-bottom: 1px solid #CBD8D3; vertical-align: middle; }
+#pf td.pf-name { width: 46%; }
+#pf td.pf-name small { display: block; color: #55665F; font-size: 12.5px; }
+#pf td input { width: 110px; min-height: 36px; text-align: right; border: 1px solid #8FA79E; border-radius: 2px; padding: 4px 8px; background: #fff; font-variant-numeric: tabular-nums; }
+#pf td input.pf-text { width: 100%; text-align: left; }
+#pf tr.pf-changed td { background: #E5F1ED; }
+#pf tr.pf-changed td.pf-name::before { content: "geändert · "; color: #006A4D; font-size: 12px; font-weight: 700; }
+#pf td.pf-diff { color: #55665F; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#pf input.pf-bad { border-color: #C41E25; background: #FCE8E8; }
+#pf input.pf-warn { border-color: #F39200; background: #FFF4E0; }
+#pf .pf-msg { font-size: 12.5px; display: block; }
+#pf .pf-msg.bad { color: #7A1216; } #pf .pf-msg.warn { color: #5C3A00; }
+@media (max-width: 700px) {
+  #pf table, #pf tbody, #pf tr, #pf td { display: block; width: 100%; }
+  #pf thead { display: none; }
+  #pf tr { border-bottom: 1px solid #CBD8D3; padding: 6px 0; }
+  #pf td { border: 0; padding: 3px 0; }
+  #pf td[data-h]::before { content: attr(data-h) ": "; color: #55665F; font-size: 13px; display: inline-block; min-width: 60px; }
+}
+#pf .pf-note { padding: 10px 14px; font-size: 15px; border-left: 4px solid; margin: 8px 0; }
+#pf .pf-note.ok { background: #E5F3E8; color: #1D4F28; border-color: #006A4D; }
+#pf .pf-note.warn { background: #FFF4E0; color: #5C3A00; border-color: #F39200; }
+#pf .pf-note.bad { background: #FCE8E8; color: #7A1216; border-color: #C41E25; }
+#pf .pf-note.info { background: #EAF2FA; color: #0F3D66; border-color: #1467A8; }
+#pf .pf-note ul { margin: 4px 0 0; padding-left: 18px; }
+#pf details summary { cursor: pointer; font-weight: 600; color: #006A4D; margin: 8px 0; }
+#pf code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: #F2F5F4; padding: 1px 4px; }
+#pf .pf-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 2px solid #0B1612; z-index: 4; }
+#pf .pf-bar-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#pf .pf-status { margin-right: auto; font-weight: 600; }

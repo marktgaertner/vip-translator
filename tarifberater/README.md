@@ -111,11 +111,12 @@ korrigieren kann. Grundlinien:
 
 ## Tarifdaten pflegen
 
-**Ohne Programmierkenntnisse:** `preispflege/index.html` im Browser öffnen,
-diese Datei (`tarifberater/index.html`) hineinziehen, Preise eintragen,
-herunterladen und auf dem Webspace ersetzen. Der Editor prüft jede Eingabe,
-rechnet alle 2.160 Antwortkombinationen mit den neuen Preisen durch und
-sperrt den Download bei Fehlern. Anleitung: `preispflege/README.md`.
+**Ohne Programmierkenntnisse, direkt in der Seite:** `?pflege` an die
+Adresse hängen (oder unten auf „Preise pflegen (ViP intern)“ klicken), Preise
+eintragen, speichern. In Chrome/Edge lässt sich direkt über die Datei im
+Webspace-Ordner speichern. Die Pflege prüft jede Eingabe, rechnet alle 2.160
+Antwortkombinationen mit den neuen Preisen durch und sperrt das Speichern bei
+Fehlern. Anleitung: `preispflege/README.md`.
 
 Technisch stehen alle Preise in **einem** JSON-Block (`<script id="tarif-data">`),
 jeder Preis als Paar `[laufendes Jahr, Folgejahr]`. Die Seite wählt das Jahr
@@ -126,7 +127,7 @@ Sprachen; ein optionaler Zusatz je Jahr (`hinweis`, z. B. „vorbehaltlich
 Tarifgenehmigung“) erscheint nur auf Deutsch.
 
 Wenn der VBB die Preise für das übernächste Jahr veröffentlicht (meist im
-September): im Editor „Jahreswechsel vorbereiten“ und die neuen Preise in die
+September): in der Preispflege „Jahreswechsel vorbereiten“ und die neuen Preise in die
 rechte Spalte eintragen. Mit `?jahr=2028` lässt sich vorab ansehen, wie die
 Seite dann aussieht.
 

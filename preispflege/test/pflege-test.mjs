@@ -6,10 +6,10 @@ import { dirname, join } from 'node:path';
 import vm from 'node:vm';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const editor = readFileSync(join(root, 'preispflege', 'index.html'), 'utf8');
 const ctx = {};
 vm.createContext(ctx);
-vm.runInContext(editor.match(/<script id="pflege-kern">([\s\S]*?)<\/script>/)[1] + '\nthis.P = PreisPflege;', ctx);
+vm.runInContext(readFileSync(join(root, 'preispflege', 'pflege-kern.js'), 'utf8') + '\nthis.P = PreisPflege;', ctx);
+const { einbauen } = await import('../einbauen.mjs');
 const P = ctx.P;
 
 let failures = 0;
@@ -20,6 +20,8 @@ for (const [ordner, tool, feld] of [['tarifberater', 'tarif', ['potsdam', 'ab', 
   console.log('\n' + ordner);
   const html = readFileSync(join(root, ordner, 'index.html'), 'utf8');
   const f = P.findData(html);
+  check('Preispflege ist eingebaut und aktuell (sonst: node preispflege/einbauen.mjs)', html.includes('<script id="pflege-quelle">') && html.includes('<!-- PFLEGE:START') && einbauen(html) === html);
+  check('Fußzeile verlinkt die Preispflege', html.includes('href="?pflege"'));
   check('Tool erkannt', f && f.tool === tool, f && f.tool);
 
   const rund = P.replaceData(html, tool, f.data);
