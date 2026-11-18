@@ -257,7 +257,9 @@ var KartePflegeKern = (function () {
   function karteAufbauen() {
     if (!window.L) { $('pf-poshint').textContent = 'Kartenbibliothek fehlt.'; return; }
     karte = L.map('pf-map').setView([52.395, 13.07], 12);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap-Mitwirkende' }).addTo(karte);
+    var kd = (st.data.kartendienst || {});
+    var url = kd.maptilerKey ? 'https://api.maptiler.com/maps/' + (kd.stil || 'streets-v2') + '/{z}/{x}/{y}.png?key=' + encodeURIComponent(kd.maptilerKey) : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    L.tileLayer(url, { maxZoom: 19, attribution: kd.maptilerKey ? '© MapTiler © OpenStreetMap-Mitwirkende' : '© OpenStreetMap-Mitwirkende' }).addTo(karte);
     karte.on('click', function (e) {
       var s = st.sel && stelle(st.sel); if (!s) { $('pf-poshint').textContent = 'Erst links eine Stelle auswählen.'; return; }
       setzen(s, e.latlng.lat, e.latlng.lng);

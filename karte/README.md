@@ -39,6 +39,18 @@ Liste funktioniert trotzdem.
 Lokal per Doppelklick geöffnet zeigt die Karte keine Kacheln (OSM verlangt
 eine Webadresse als Herkunft) – auf dem Webspace funktioniert es.
 
+## Kartendienst (MapTiler)
+
+Die Kacheln kommen von OpenStreetMap, solange kein Schlüssel eingetragen ist.
+Mit einem MapTiler-Schlüssel laden sie von MapTiler (zuverlässiger für die
+Website). Eintrag im Datenblock `karte-data` unter `kartendienst`:
+
+    "kartendienst": { "maptilerKey": "HIER_DER_SCHLÜSSEL", "stil": "streets-v2" }
+
+Den Schlüssel in der MapTiler-Oberfläche auf die Domains der ViP-Website
+beschränken (Referrer-Einschränkung), damit er außerhalb nicht nutzbar ist.
+Die Nennung von MapTiler und OpenStreetMap erscheint dann automatisch.
+
 ## Standorte pflegen und erweitern
 
 Ohne Programmierkenntnisse, direkt in der Karte: `?pflege` an die Adresse
